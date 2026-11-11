@@ -1,0 +1,317 @@
+# INE, Encuesta de Presupuestos Familiares (EPF). Gasto medio por hogar, euros/any, grups COICOP 2018.
+# year	2025
+# retrieved	2026-11-09
+# tables	type=73807 size=73806 income=73809
+# source	https://www.ine.es/dyngs/INEbase/operacion.htm?c=Estadistica_C&cid=1254736176806
+breakdown	key	label	income_min	income_max	group	annual_eur
+income	0	Hasta 499 euros	0	499	01	3027.22
+income	0	Hasta 499 euros	0	499	02	209.79
+income	0	Hasta 499 euros	0	499	03	508.41
+income	0	Hasta 499 euros	0	499	04	8294.65
+income	0	Hasta 499 euros	0	499	05	436.91
+income	0	Hasta 499 euros	0	499	06	710.74
+income	0	Hasta 499 euros	0	499	07	1988.47
+income	0	Hasta 499 euros	0	499	08	492.30
+income	0	Hasta 499 euros	0	499	09	626.49
+income	0	Hasta 499 euros	0	499	11	1038.35
+income	0	Hasta 499 euros	0	499	12	502.46
+income	0	Hasta 499 euros	0	499	13	425.79
+income	500	De 500 a 999 euros	500	999	01	3082.22
+income	500	De 500 a 999 euros	500	999	02	188.69
+income	500	De 500 a 999 euros	500	999	03	383.97
+income	500	De 500 a 999 euros	500	999	04	7528.60
+income	500	De 500 a 999 euros	500	999	05	529.17
+income	500	De 500 a 999 euros	500	999	06	523.46
+income	500	De 500 a 999 euros	500	999	07	803.47
+income	500	De 500 a 999 euros	500	999	08	459.57
+income	500	De 500 a 999 euros	500	999	09	398.77
+income	500	De 500 a 999 euros	500	999	10	32.82
+income	500	De 500 a 999 euros	500	999	11	648.85
+income	500	De 500 a 999 euros	500	999	12	435.02
+income	500	De 500 a 999 euros	500	999	13	475.05
+income	1000	De 1.000 a 1.499 euros	1000	1499	01	3558.14
+income	1000	De 1.000 a 1.499 euros	1000	1499	02	272.52
+income	1000	De 1.000 a 1.499 euros	1000	1499	03	670.54
+income	1000	De 1.000 a 1.499 euros	1000	1499	04	8631.65
+income	1000	De 1.000 a 1.499 euros	1000	1499	05	731.22
+income	1000	De 1.000 a 1.499 euros	1000	1499	06	875.97
+income	1000	De 1.000 a 1.499 euros	1000	1499	07	1653.40
+income	1000	De 1.000 a 1.499 euros	1000	1499	08	626.81
+income	1000	De 1.000 a 1.499 euros	1000	1499	09	591.45
+income	1000	De 1.000 a 1.499 euros	1000	1499	10	99.58
+income	1000	De 1.000 a 1.499 euros	1000	1499	11	1168.28
+income	1000	De 1.000 a 1.499 euros	1000	1499	12	645.01
+income	1000	De 1.000 a 1.499 euros	1000	1499	13	750.69
+income	1500	De 1.500 a 1.999 euros	1500	1999	01	4305.98
+income	1500	De 1.500 a 1.999 euros	1500	1999	02	296.86
+income	1500	De 1.500 a 1.999 euros	1500	1999	03	910.02
+income	1500	De 1.500 a 1.999 euros	1500	1999	04	9211.96
+income	1500	De 1.500 a 1.999 euros	1500	1999	05	840.44
+income	1500	De 1.500 a 1.999 euros	1500	1999	06	984.15
+income	1500	De 1.500 a 1.999 euros	1500	1999	07	1942.30
+income	1500	De 1.500 a 1.999 euros	1500	1999	08	748.90
+income	1500	De 1.500 a 1.999 euros	1500	1999	09	932.26
+income	1500	De 1.500 a 1.999 euros	1500	1999	10	160.04
+income	1500	De 1.500 a 1.999 euros	1500	1999	11	1592.21
+income	1500	De 1.500 a 1.999 euros	1500	1999	12	783.31
+income	1500	De 1.500 a 1.999 euros	1500	1999	13	833.01
+income	2000	De 2.000 a 2.499 euros	2000	2499	01	4858.30
+income	2000	De 2.000 a 2.499 euros	2000	2499	02	379.63
+income	2000	De 2.000 a 2.499 euros	2000	2499	03	1169.67
+income	2000	De 2.000 a 2.499 euros	2000	2499	04	9948.85
+income	2000	De 2.000 a 2.499 euros	2000	2499	05	915.18
+income	2000	De 2.000 a 2.499 euros	2000	2499	06	1074.56
+income	2000	De 2.000 a 2.499 euros	2000	2499	07	2879.27
+income	2000	De 2.000 a 2.499 euros	2000	2499	08	920.50
+income	2000	De 2.000 a 2.499 euros	2000	2499	09	1179.37
+income	2000	De 2.000 a 2.499 euros	2000	2499	10	225.71
+income	2000	De 2.000 a 2.499 euros	2000	2499	11	2349.70
+income	2000	De 2.000 a 2.499 euros	2000	2499	12	971.96
+income	2000	De 2.000 a 2.499 euros	2000	2499	13	1002.62
+income	2500	De 2.500 a 2.999 euros	2500	2999	01	5375.70
+income	2500	De 2.500 a 2.999 euros	2500	2999	02	438.16
+income	2500	De 2.500 a 2.999 euros	2500	2999	03	1271.62
+income	2500	De 2.500 a 2.999 euros	2500	2999	04	10733.21
+income	2500	De 2.500 a 2.999 euros	2500	2999	05	1172.32
+income	2500	De 2.500 a 2.999 euros	2500	2999	06	1346.03
+income	2500	De 2.500 a 2.999 euros	2500	2999	07	3817.77
+income	2500	De 2.500 a 2.999 euros	2500	2999	08	1044.64
+income	2500	De 2.500 a 2.999 euros	2500	2999	09	1369.99
+income	2500	De 2.500 a 2.999 euros	2500	2999	10	270.86
+income	2500	De 2.500 a 2.999 euros	2500	2999	11	2730.11
+income	2500	De 2.500 a 2.999 euros	2500	2999	12	1156.38
+income	2500	De 2.500 a 2.999 euros	2500	2999	13	1210.98
+income	3000	De 3.000 a 4.999 euros	3000	4999	01	6289.36
+income	3000	De 3.000 a 4.999 euros	3000	4999	02	504.23
+income	3000	De 3.000 a 4.999 euros	3000	4999	03	1629.70
+income	3000	De 3.000 a 4.999 euros	3000	4999	04	12252.16
+income	3000	De 3.000 a 4.999 euros	3000	4999	05	1286.34
+income	3000	De 3.000 a 4.999 euros	3000	4999	06	1641.43
+income	3000	De 3.000 a 4.999 euros	3000	4999	07	4770.83
+income	3000	De 3.000 a 4.999 euros	3000	4999	08	1229.07
+income	3000	De 3.000 a 4.999 euros	3000	4999	09	2056.42
+income	3000	De 3.000 a 4.999 euros	3000	4999	10	577.85
+income	3000	De 3.000 a 4.999 euros	3000	4999	11	3949.68
+income	3000	De 3.000 a 4.999 euros	3000	4999	12	1462.76
+income	3000	De 3.000 a 4.999 euros	3000	4999	13	1443.11
+income	5000	5.000 euros o más	5000		01	8056.18
+income	5000	5.000 euros o más	5000		02	590.19
+income	5000	5.000 euros o más	5000		03	2401.44
+income	5000	5.000 euros o más	5000		04	17091.25
+income	5000	5.000 euros o más	5000		05	2258.32
+income	5000	5.000 euros o más	5000		06	2164.07
+income	5000	5.000 euros o más	5000		07	7340.65
+income	5000	5.000 euros o más	5000		08	1622.14
+income	5000	5.000 euros o más	5000		09	3618.83
+income	5000	5.000 euros o más	5000		10	1704.93
+income	5000	5.000 euros o más	5000		11	6273.34
+income	5000	5.000 euros o más	5000		12	2251.04
+income	5000	5.000 euros o más	5000		13	2158.90
+income	total	Total			01	5638.41
+income	total	Total			02	431.94
+income	total	Total			03	1420.21
+income	total	Total			04	11682.07
+income	total	Total			05	1251.56
+income	total	Total			06	1417.78
+income	total	Total			07	4035.18
+income	total	Total			08	1081.03
+income	total	Total			09	1778.17
+income	total	Total			10	572.89
+income	total	Total			11	3290.04
+income	total	Total			12	1289.80
+income	total	Total			13	1295.57
+size	0	Total			01	5626.32
+size	0	Total			02	431.78
+size	0	Total			03	1416.00
+size	0	Total			04	11664.65
+size	0	Total			05	1247.88
+size	0	Total			06	1413.43
+size	0	Total			07	4019.92
+size	0	Total			08	1078.53
+size	0	Total			09	1771.78
+size	0	Total			10	570.48
+size	0	Total			11	3281.68
+size	0	Total			12	1285.56
+size	0	Total			13	1292.68
+size	1	1 miembro			01	3236.92
+size	1	1 miembro			02	261.43
+size	1	1 miembro			03	766.94
+size	1	1 miembro			04	10012.02
+size	1	1 miembro			05	869.32
+size	1	1 miembro			06	907.84
+size	1	1 miembro			07	2124.45
+size	1	1 miembro			08	728.40
+size	1	1 miembro			09	1033.29
+size	1	1 miembro			10	76.02
+size	1	1 miembro			11	1845.92
+size	1	1 miembro			12	806.04
+size	1	1 miembro			13	798.33
+size	2	2 miembros			01	5542.14
+size	2	2 miembros			02	454.30
+size	2	2 miembros			03	1204.60
+size	2	2 miembros			04	12146.57
+size	2	2 miembros			05	1250.68
+size	2	2 miembros			06	1505.66
+size	2	2 miembros			07	3737.47
+size	2	2 miembros			08	1026.29
+size	2	2 miembros			09	1705.85
+size	2	2 miembros			10	150.66
+size	2	2 miembros			11	3029.50
+size	2	2 miembros			12	1365.83
+size	2	2 miembros			13	1251.47
+size	3	3 miembros			01	6459.74
+size	3	3 miembros			02	508.80
+size	3	3 miembros			03	1619.35
+size	3	3 miembros			04	12108.07
+size	3	3 miembros			05	1322.50
+size	3	3 miembros			06	1599.85
+size	3	3 miembros			07	4740.19
+size	3	3 miembros			08	1230.87
+size	3	3 miembros			09	1953.08
+size	3	3 miembros			10	797.84
+size	3	3 miembros			11	3730.77
+size	3	3 miembros			12	1475.14
+size	3	3 miembros			13	1500.49
+size	4	4 miembros			01	7642.41
+size	4	4 miembros			02	523.89
+size	4	4 miembros			03	2263.62
+size	4	4 miembros			04	12799.56
+size	4	4 miembros			05	1553.18
+size	4	4 miembros			06	1805.73
+size	4	4 miembros			07	5953.16
+size	4	4 miembros			08	1442.08
+size	4	4 miembros			09	2700.77
+size	4	4 miembros			10	1473.85
+size	4	4 miembros			11	5148.35
+size	4	4 miembros			12	1638.26
+size	4	4 miembros			13	1775.57
+size	5	5 o más miembros			01	8540.95
+size	5	5 o más miembros			02	588.60
+size	5	5 o más miembros			03	2391.96
+size	5	5 o más miembros			04	12558.76
+size	5	5 o más miembros			05	1817.83
+size	5	5 o más miembros			06	1677.54
+size	5	5 o más miembros			07	6350.96
+size	5	5 o más miembros			08	1450.74
+size	5	5 o más miembros			09	2449.59
+size	5	5 o más miembros			10	1590.18
+size	5	5 o más miembros			11	4694.17
+size	5	5 o más miembros			12	1565.32
+size	5	5 o más miembros			13	1775.37
+type	0	Persona sola con menos de 65 años			01	2934.19
+type	0	Persona sola con menos de 65 años			02	294.31
+type	0	Persona sola con menos de 65 años			03	869.41
+type	0	Persona sola con menos de 65 años			04	9360.22
+type	0	Persona sola con menos de 65 años			05	718.15
+type	0	Persona sola con menos de 65 años			06	835.43
+type	0	Persona sola con menos de 65 años			07	2788.32
+type	0	Persona sola con menos de 65 años			08	829.12
+type	0	Persona sola con menos de 65 años			09	1241.41
+type	0	Persona sola con menos de 65 años			10	123.68
+type	0	Persona sola con menos de 65 años			11	2328.69
+type	0	Persona sola con menos de 65 años			12	743.21
+type	0	Persona sola con menos de 65 años			13	717.88
+type	1	Persona sola de 65 o más años			01	3659.97
+type	1	Persona sola de 65 o más años			02	215.48
+type	1	Persona sola de 65 o más años			03	623.74
+type	1	Persona sola de 65 o más años			04	10922.89
+type	1	Persona sola de 65 o más años			05	1080.58
+type	1	Persona sola de 65 o más años			06	1009.04
+type	1	Persona sola de 65 o más años			07	1196.74
+type	1	Persona sola de 65 o más años			08	587.66
+type	1	Persona sola de 65 o más años			09	742.44
+type	1	Persona sola de 65 o más años			10	9.41
+type	1	Persona sola de 65 o más años			11	1171.26
+type	1	Persona sola de 65 o más años			12	893.85
+type	1	Persona sola de 65 o más años			13	910.76
+type	2	Pareja sin hijos			01	5838.85
+type	2	Pareja sin hijos			02	474.09
+type	2	Pareja sin hijos			03	1260.86
+type	2	Pareja sin hijos			04	12642.91
+type	2	Pareja sin hijos			05	1288.06
+type	2	Pareja sin hijos			06	1612.29
+type	2	Pareja sin hijos			07	4115.98
+type	2	Pareja sin hijos			08	1063.48
+type	2	Pareja sin hijos			09	1856.30
+type	2	Pareja sin hijos			10	98.41
+type	2	Pareja sin hijos			11	3305.40
+type	2	Pareja sin hijos			12	1494.74
+type	2	Pareja sin hijos			13	1282.95
+type	3	Pareja con 1 hijo			01	6674.04
+type	3	Pareja con 1 hijo			02	542.89
+type	3	Pareja con 1 hijo			03	1666.28
+type	3	Pareja con 1 hijo			04	12285.10
+type	3	Pareja con 1 hijo			05	1369.64
+type	3	Pareja con 1 hijo			06	1634.80
+type	3	Pareja con 1 hijo			07	5040.08
+type	3	Pareja con 1 hijo			08	1265.60
+type	3	Pareja con 1 hijo			09	2024.86
+type	3	Pareja con 1 hijo			10	783.23
+type	3	Pareja con 1 hijo			11	3946.38
+type	3	Pareja con 1 hijo			12	1567.10
+type	3	Pareja con 1 hijo			13	1551.30
+type	4	Pareja con 2 hijos			01	7691.66
+type	4	Pareja con 2 hijos			02	532.01
+type	4	Pareja con 2 hijos			03	2338.95
+type	4	Pareja con 2 hijos			04	12829.13
+type	4	Pareja con 2 hijos			05	1581.67
+type	4	Pareja con 2 hijos			06	1826.97
+type	4	Pareja con 2 hijos			07	6187.20
+type	4	Pareja con 2 hijos			08	1454.25
+type	4	Pareja con 2 hijos			09	2793.66
+type	4	Pareja con 2 hijos			10	1543.15
+type	4	Pareja con 2 hijos			11	5327.46
+type	4	Pareja con 2 hijos			12	1665.01
+type	4	Pareja con 2 hijos			13	1792.12
+type	5	Pareja con 3 o más hijos			01	8354.73
+type	5	Pareja con 3 o más hijos			02	507.07
+type	5	Pareja con 3 o más hijos			03	2482.32
+type	5	Pareja con 3 o más hijos			04	12738.87
+type	5	Pareja con 3 o más hijos			05	2006.43
+type	5	Pareja con 3 o más hijos			06	1667.17
+type	5	Pareja con 3 o más hijos			07	6462.11
+type	5	Pareja con 3 o más hijos			08	1485.29
+type	5	Pareja con 3 o más hijos			09	2638.95
+type	5	Pareja con 3 o más hijos			10	1817.16
+type	5	Pareja con 3 o más hijos			11	4925.01
+type	5	Pareja con 3 o más hijos			12	1602.99
+type	5	Pareja con 3 o más hijos			13	1752.97
+type	6	Un adulto con hijos			01	5253.89
+type	6	Un adulto con hijos			02	381.10
+type	6	Un adulto con hijos			03	1244.38
+type	6	Un adulto con hijos			04	10991.84
+type	6	Un adulto con hijos			05	1041.78
+type	6	Un adulto con hijos			06	1336.07
+type	6	Un adulto con hijos			07	3101.94
+type	6	Un adulto con hijos			08	1007.01
+type	6	Un adulto con hijos			09	1432.30
+type	6	Un adulto con hijos			10	631.17
+type	6	Un adulto con hijos			11	2455.60
+type	6	Un adulto con hijos			12	1023.72
+type	6	Un adulto con hijos			13	1272.39
+type	7	Otro tipo de hogar			01	6845.03
+type	7	Otro tipo de hogar			02	583.12
+type	7	Otro tipo de hogar			03	1602.79
+type	7	Otro tipo de hogar			04	11781.33
+type	7	Otro tipo de hogar			05	1442.18
+type	7	Otro tipo de hogar			06	1469.19
+type	7	Otro tipo de hogar			07	4289.15
+type	7	Otro tipo de hogar			08	1192.61
+type	7	Otro tipo de hogar			09	1740.70
+type	7	Otro tipo de hogar			10	613.37
+type	7	Otro tipo de hogar			11	3456.72
+type	7	Otro tipo de hogar			12	1331.40
+type	7	Otro tipo de hogar			13	1476.10
+type	8	Total			01	5626.32
+type	8	Total			02	431.78
+type	8	Total			03	1416.00
+type	8	Total			04	11664.65
+type	8	Total			05	1247.88
+type	8	Total			06	1413.43
+type	8	Total			07	4019.92
+type	8	Total			08	1078.53
+type	8	Total			09	1771.78
+type	8	Total			10	570.48
+type	8	Total			11	3281.68
+type	8	Total			12	1285.56
+type	8	Total			13	1292.68

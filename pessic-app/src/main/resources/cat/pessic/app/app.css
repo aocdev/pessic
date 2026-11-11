@@ -1,0 +1,186 @@
+/* Palette taken from the PWA (theme #1f5f55, background #f3f5f2). */
+.root {
+    -pp-bg: #f3f5f2;
+    -pp-card: #ffffff;
+    -pp-ink: #1d2422;
+    -pp-muted: #5f6b67;
+    -pp-accent: #1f5f55;
+    -pp-ok: #2e7d4f;
+    -pp-warn: #a8660b;
+    -pp-bad: #b3261e;
+    -fx-background-color: -pp-bg;
+    -fx-font-size: 14px;
+    -fx-text-fill: -pp-ink;
+}
+.scroll-pane, .scroll-pane > .viewport { -fx-background-color: -pp-bg; }
+.label { -fx-text-fill: -pp-ink; }
+.h1 { -fx-font-size: 26px; -fx-font-weight: bold; }
+.h2 { -fx-font-size: 17px; -fx-font-weight: bold; }
+.muted { -fx-text-fill: -pp-muted; }
+.small { -fx-font-size: 12px; -fx-text-fill: -pp-muted; }
+.kpi { -fx-font-size: 22px; -fx-font-weight: bold; }
+.hero { -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: -pp-accent; }
+.num { -fx-font-family: "monospace"; }
+.card {
+    -fx-background-color: -pp-card;
+    -fx-background-radius: 10;
+    -fx-border-color: #dfe5e1;
+    -fx-border-radius: 10;
+    -fx-padding: 16;
+}
+.week {
+    -fx-min-width: 150;
+    -fx-background-color: #f7f9f7;
+    -fx-background-radius: 8;
+    -fx-border-color: #dfe5e1;
+    -fx-border-radius: 8;
+    -fx-padding: 10;
+}
+.week.now { -fx-border-color: -pp-accent; -fx-border-width: 2; }
+.status { -fx-padding: 2 8; -fx-background-radius: 10; -fx-font-size: 12px; -fx-font-weight: bold; }
+.st-ok { -fx-background-color: #e3f1e8; -fx-text-fill: -pp-ok; }
+.st-warn { -fx-background-color: #fbefd9; -fx-text-fill: -pp-warn; }
+.st-bad { -fx-background-color: #f9e0de; -fx-text-fill: -pp-bad; }
+.st-n { -fx-background-color: #eceff1; -fx-text-fill: -pp-muted; }
+.button.primary { -fx-background-color: -pp-accent; -fx-text-fill: white; -fx-font-weight: bold; }
+.progress-bar > .bar { -fx-background-color: -pp-accent; -fx-background-insets: 0; -fx-background-radius: 4; }
+.progress-bar.over > .bar { -fx-background-color: -pp-bad; }
+.progress-bar > .track { -fx-background-radius: 4; }
+.eyebrow { -fx-text-fill: -pp-accent; -fx-font-size: 12px; -fx-font-weight: bold; }
+.field-label { -fx-font-size: 13px; -fx-font-weight: bold; }
+.field-error { -fx-text-fill: -pp-bad; -fx-font-size: 12px; }
+.text-field, .combo-box, .spinner { -fx-pref-height: 32px; }
+
+/* ---- shell ---- */
+.app-header { -fx-background-color: -pp-bg; -fx-border-color: transparent transparent #dfe5e1 transparent; }
+.nav { -fx-padding: 0 0 0 0; }
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 8 14 8 14;
+    -fx-text-fill: -pp-muted;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+.nav-item:hover { -fx-text-fill: -pp-ink; }
+.nav-item:selected { -fx-border-color: -pp-accent; -fx-text-fill: -pp-accent; -fx-font-weight: bold; }
+.nav-arrow { -fx-font-size: 18px; -fx-padding: 0 12 2 12; }
+.hero-secondary { -fx-font-size: 26px; -fx-font-weight: bold; }
+.tile-bad .kpi { -fx-text-fill: -pp-bad; }
+.text-bad { -fx-text-fill: -pp-bad; }
+
+/* ---- buttons ---- */
+.link-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-text-fill: -pp-accent;
+    -fx-underline: false;
+    -fx-cursor: hand;
+}
+.link-button:hover { -fx-underline: true; }
+.danger-link { -fx-text-fill: -pp-muted; }
+.danger-link:hover { -fx-text-fill: -pp-bad; }
+.button.danger { -fx-text-fill: -pp-bad; }
+.small-button { -fx-padding: 3 12; -fx-font-size: 12px; }
+.text-field.invalid { -fx-border-color: -pp-bad; -fx-border-radius: 3; }
+.num-input { -fx-font-family: "monospace"; }
+
+/* ---- tables ---- */
+.simple-table .th {
+    -fx-padding: 6 10;
+    -fx-border-color: transparent transparent #cfd8d3 transparent;
+}
+.simple-table .th .label { -fx-text-fill: -pp-muted; -fx-font-size: 12px; -fx-font-weight: bold; }
+.simple-table .td {
+    -fx-padding: 7 10;
+    -fx-min-height: 36;
+    -fx-border-color: transparent transparent #edf1ee transparent;
+}
+.simple-table .row-done .label { -fx-opacity: 0.55; }
+.simple-table .row-total { -fx-border-color: #cfd8d3 transparent transparent transparent; }
+.simple-table .row-total .label { -fx-font-weight: bold; }
+.simple-table .row-income .label { -fx-font-weight: bold; }
+.inc { -fx-text-fill: -pp-ok; }
+
+/* ---- envelope bars ---- */
+.env-bar { -fx-background-color: #e8ece9; -fx-background-radius: 6; }
+.seg-fixed { -fx-background-color: #5b7f9a; }
+.seg-var { -fx-background-color: -pp-accent; }
+.seg-pending { -fx-background-color: rgba(91,127,154,0.4); }
+.env-bar.over .seg-var { -fx-background-color: -pp-bad; }
+.swatch { -fx-min-width: 12; -fx-min-height: 12; -fx-max-width: 12; -fx-max-height: 12; -fx-background-radius: 3; }
+
+/* ---- dialogs ---- */
+.dialog-pane { -fx-background-color: -pp-card; }
+.dialog-pane > .content { -fx-padding: 18 20 6 20; }
+.button.danger-primary { -fx-background-color: -pp-bad; -fx-text-fill: white; -fx-font-weight: bold; }
+
+/* ---- envelopes v2 ---- */
+.env-bar { -fx-background-color: transparent; }
+.env-track { -fx-background-color: #f0f3f1; -fx-background-radius: 6; }
+.env-track.has-limit { -fx-background-color: #e3e9e5; }
+.seg-annual, .swatch.seg-annual {
+    -fx-background-color: linear-gradient(from 0px 0px to 6px 6px, repeat, #c49a2c 0%, #c49a2c 45%, #ecd9a4 45%, #ecd9a4 100%);
+}
+.ine-marker { -fx-background-color: #1d2422; -fx-opacity: 0.55; }
+.swatch.ine-swatch { -fx-min-width: 2; -fx-max-width: 2; -fx-background-color: #1d2422; -fx-opacity: 0.55; }
+.env-empty, .env-empty .label { -fx-opacity: 0.55; }
+.annual-note { -fx-text-fill: #8a6a14; }
+.notice { -fx-background-color: #e9f2ef; -fx-background-radius: 6; -fx-padding: 8 10; -fx-text-fill: -pp-accent; }
+
+/* ---- entry form mode switch (Despesa / Ingrés / Devolució) */
+.segmented { -fx-background-color: #eef2ef; -fx-background-radius: 8; -fx-padding: 3; }
+.segment {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 4 12;
+    -fx-text-fill: -pp-muted;
+    -fx-cursor: hand;
+}
+.segment:hover { -fx-text-fill: -pp-ink; }
+.segment:selected { -fx-background-color: -pp-card; -fx-text-fill: -pp-accent; -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 3, 0, 0, 1); }
+
+/* ---- banners, headings, warnings */
+.h3 { -fx-font-size: 15px; -fx-font-weight: bold; }
+.text-warn { -fx-text-fill: -pp-warn; }
+.banner { -fx-background-color: #e9f2ef; -fx-border-color: #b9d3cb; }
+
+/* ---- savings goals */
+.goal {
+    -fx-background-color: #f7f9f7;
+    -fx-background-radius: 8;
+    -fx-border-color: #dfe5e1;
+    -fx-border-radius: 8;
+    -fx-padding: 12;
+}
+.goal-bar { -fx-pref-height: 12; }
+.goal-bar > .bar { -fx-background-color: -pp-accent; -fx-background-radius: 6; -fx-background-insets: 0; }
+.goal-bar > .track { -fx-background-color: #e3e9e5; -fx-background-radius: 6; }
+
+/* ---- history */
+.simple-table .row-estimate .label { -fx-font-style: italic; }
+.chart { -fx-padding: 4 0 0 0; }
+.chart-plot-background { -fx-background-color: transparent; }
+.chart-vertical-grid-lines { -fx-stroke: transparent; }
+.chart-horizontal-grid-lines { -fx-stroke: #e6ebe8; }
+.history-chart .default-color0.chart-bar { -fx-bar-fill: #1f5f55; }
+.history-chart .default-color1.chart-bar { -fx-bar-fill: #d98b2b; }
+.history-chart .default-color2.chart-bar { -fx-bar-fill: #8fb9ad; }
+.history-chart .default-color0.chart-legend-item-symbol { -fx-background-color: #1f5f55; }
+.history-chart .default-color1.chart-legend-item-symbol { -fx-background-color: #d98b2b; }
+.history-chart .default-color2.chart-legend-item-symbol { -fx-background-color: #8fb9ad; }
+.category-chart .default-color0.chart-series-line { -fx-stroke: #d98b2b; -fx-stroke-width: 2.5; }
+.category-chart .default-color0.chart-line-symbol { -fx-background-color: #d98b2b, white; }
+.category-chart .default-color1.chart-series-line { -fx-stroke: #1f5f55; -fx-stroke-width: 2; -fx-stroke-dash-array: 6 4; }
+.category-chart .default-color1.chart-line-symbol { -fx-background-color: #1f5f55, white; }
+.category-chart .default-color2.chart-series-line { -fx-stroke: #8a9692; -fx-stroke-width: 1.5; -fx-stroke-dash-array: 2 4; }
+.category-chart .default-color2.chart-line-symbol { -fx-background-color: transparent; }
+.category-chart .default-color0.chart-legend-item-symbol { -fx-background-color: #d98b2b; }
+.category-chart .default-color1.chart-legend-item-symbol { -fx-background-color: #1f5f55; }
+.category-chart .default-color2.chart-legend-item-symbol { -fx-background-color: #8a9692; }
+
+/* ---- dialogs that scroll */
+.dialog-scroll, .dialog-scroll > .viewport { -fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; }

@@ -1,0 +1,298 @@
+{
+ "v": 1,
+ "active": "marta",
+ "profiles": {
+  "marta": {
+   "nom": "Marta",
+   "cfg": {
+    "ingressos": 2150,
+    "estalvi": 400,
+    "dia": 28,
+    "limits": {
+     "Habitatge, aigua, llum i gas": 0,
+     "Alimentació": 220,
+     "Transport": 480,
+     "Restaurants i hotels": 70,
+     "Oci, esport i cultura": 110,
+     "Vestit i calçat": 40,
+     "Sanitat": 60,
+     "Cura personal i altres": 45,
+     "Assegurances i serveis financers": 0,
+     "Mobles i llar": 25,
+     "Comunicacions": 30,
+     "Educació": 0,
+     "Alcohol i tabac": 0
+    },
+    "plan": [
+     {
+      "id": "prestec",
+      "dia": 30,
+      "c": "Préstec de la moto",
+      "cat": "Transport",
+      "imp": 245.3
+     },
+     {
+      "id": "musica",
+      "dia": 29,
+      "c": "Subscripció de música (de baixa)",
+      "cat": "Oci, esport i cultura",
+      "imp": 10.99,
+      "fins": "2026-11",
+      "extra": true
+     },
+     {
+      "id": "gimnas",
+      "dia": 1,
+      "c": "Gimnàs del barri",
+      "cat": "Oci, esport i cultura",
+      "imp": 45
+     },
+     {
+      "id": "piscina",
+      "dia": 1,
+      "c": "Piscina municipal (de baixa)",
+      "cat": "Oci, esport i cultura",
+      "imp": 32,
+      "fins": "2026-11",
+      "extra": true
+     },
+     {
+      "id": "aparcament",
+      "dia": 1,
+      "c": "Pàrquing de la feina",
+      "cat": "Transport",
+      "imp": 90,
+      "des": "2026-12"
+     },
+     {
+      "id": "dentista",
+      "dia": 7,
+      "c": "Dentista (últim termini)",
+      "cat": "Sanitat",
+      "imp": 180,
+      "fins": "2026-11",
+      "extra": true
+     },
+     {
+      "id": "diari",
+      "dia": 8,
+      "c": "Diari digital",
+      "cat": "Oci, esport i cultura",
+      "imp": 9.99
+     },
+     {
+      "id": "fisio-x",
+      "dia": 14,
+      "c": "Fisioteràpia (quota ajornada)",
+      "cat": "Sanitat",
+      "imp": 55,
+      "des": "2026-11",
+      "fins": "2026-11",
+      "extra": true
+     },
+     {
+      "id": "fisio",
+      "dia": 14,
+      "c": "Fisioteràpia",
+      "cat": "Sanitat",
+      "imp": 55,
+      "fins": "2028-01"
+     },
+     {
+      "id": "mobil",
+      "dia": 20,
+      "c": "Tarifa del mòbil",
+      "cat": "Comunicacions",
+      "imp": 15.95
+     }
+    ],
+    "anuals": [
+     {
+      "mes": 3,
+      "c": "Curs d'idiomes (primavera)",
+      "cat": "Educació",
+      "imp": 420,
+      "id": "an0"
+     },
+     {
+      "mes": 5,
+      "c": "Assegurança de la moto",
+      "cat": "Assegurances i serveis financers",
+      "imp": 310.4,
+      "id": "an1"
+     },
+     {
+      "mes": 7,
+      "c": "Botiga en línia prèmium",
+      "cat": "Oci, esport i cultura",
+      "imp": 49.9,
+      "id": "an2"
+     },
+     {
+      "mes": 8,
+      "c": "App de mapes",
+      "cat": "Oci, esport i cultura",
+      "imp": 24.99,
+      "id": "an3"
+     },
+     {
+      "mes": 9,
+      "c": "Curs d'idiomes (tardor)",
+      "cat": "Educació",
+      "imp": 420,
+      "id": "an4"
+     },
+     {
+      "mes": 9,
+      "c": "App d'entrenament",
+      "cat": "Oci, esport i cultura",
+      "imp": 79.99,
+      "id": "an5"
+     },
+     {
+      "mes": 10,
+      "c": "Revisió de la moto",
+      "cat": "Transport",
+      "imp": 185.5,
+      "id": "an6"
+     },
+     {
+      "mes": 10,
+      "c": "Domini i correu",
+      "cat": "Comunicacions",
+      "imp": 36,
+      "id": "an7"
+     }
+    ],
+    "llar": 7
+   },
+   "moves": [
+    {
+     "c": "Cafè",
+     "cat": "Alimentació",
+     "data": "2026-11-03",
+     "id": "mfake0001",
+     "imp": 1.3,
+     "reserva": false
+    },
+    {
+     "c": "Cafè",
+     "cat": "Alimentació",
+     "data": "2026-11-03",
+     "id": "mfake0002",
+     "imp": 1.3,
+     "reserva": false
+    },
+    {
+     "c": "Fruita",
+     "cat": "Alimentació",
+     "data": "2026-11-03",
+     "id": "mfake0003",
+     "imp": 2.4,
+     "reserva": false
+    },
+    {
+     "c": "Dinar de carmanyola",
+     "cat": "Alimentació",
+     "data": "2026-11-03",
+     "id": "mfake0004",
+     "imp": 5.9,
+     "reserva": false
+    },
+    {
+     "c": "Cafè",
+     "cat": "Alimentació",
+     "data": "2026-11-03",
+     "id": "mfake0005",
+     "imp": 1.3,
+     "reserva": false
+    },
+    {
+     "c": "Benzina",
+     "cat": "Transport",
+     "data": "2026-11-04",
+     "id": "mfake0006",
+     "imp": 35,
+     "reserva": false
+    },
+    {
+     "c": "Cafè",
+     "cat": "Alimentació",
+     "data": "2026-11-05",
+     "id": "mfake0007",
+     "imp": 1.3,
+     "reserva": false
+    },
+    {
+     "c": "Cafè i croissant",
+     "cat": "Alimentació",
+     "data": "2026-11-05",
+     "id": "mfake0008",
+     "imp": 2.8,
+     "reserva": false
+    },
+    {
+     "c": "Cafè",
+     "cat": "Alimentació",
+     "data": "2026-11-05",
+     "id": "mfake0009",
+     "imp": 1.3,
+     "reserva": false
+    },
+    {
+     "c": "Sopar amb amics",
+     "cat": "Restaurants i hotels",
+     "data": "2026-11-05",
+     "id": "mfake0010",
+     "imp": 24.5,
+     "reserva": false
+    },
+    {
+     "c": "Gimnàs del barri",
+     "cat": "Oci, esport i cultura",
+     "data": "2026-11-01",
+     "id": "p-gimnas_2026-11",
+     "imp": 45,
+     "pid": "gimnas@2026-11",
+     "reserva": false
+    },
+    {
+     "c": "Piscina municipal (de baixa)",
+     "cat": "Oci, esport i cultura",
+     "data": "2026-11-01",
+     "id": "p-piscina_2026-11",
+     "imp": 32,
+     "pid": "piscina@2026-11",
+     "reserva": false
+    },
+    {
+     "c": "Dentista (últim termini)",
+     "cat": "Sanitat",
+     "data": "2026-11-06",
+     "id": "p-dentista_2026-11",
+     "imp": 180,
+     "pid": "dentista@2026-11",
+     "reserva": false
+    },
+    {
+     "c": "Préstec de la moto",
+     "cat": "Transport",
+     "data": "2026-10-30",
+     "id": "p-prestec_2026-11",
+     "imp": 245.3,
+     "pid": "prestec@2026-11",
+     "reserva": false
+    },
+    {
+     "c": "Subscripció de música (de baixa)",
+     "cat": "Oci, esport i cultura",
+     "data": "2026-10-29",
+     "id": "p-musica_2026-11",
+     "imp": 10.99,
+     "pid": "musica@2026-11",
+     "reserva": false
+    }
+   ]
+  }
+ }
+}
