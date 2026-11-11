@@ -1,5 +1,6 @@
 package cat.pessic.core.income;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.Category;
 import cat.pessic.core.common.Money;
 import cat.pessic.core.savings.Pot;
@@ -19,12 +20,11 @@ public record Income(String id, LocalDate date, String concept, BigDecimal amoun
                      Destination destination, Category category, String potId, String scheduledId) {
 
     public enum Kind {
-        EXTRA_PAY("Paga extra"), BONUS("Bonus o incentiu"), REFUND("Devolució"), CARRY("Sobrant del mes anterior"),
-        OTHER("Altres ingressos");
+        EXTRA_PAY, BONUS, REFUND, CARRY,
+        OTHER;
 
-        public final String label;
-
-        Kind(String label) { this.label = label; }
+        /** Name shown to the user. */
+        public String label() { return t("income.kind." + name()); }
 
         public String code() { return name().toLowerCase(); }
 
@@ -33,19 +33,18 @@ public record Income(String id, LocalDate date, String concept, BigDecimal amoun
 
     public enum Destination {
         /** Adds to what can be spent in the cycle it arrives in. */
-        BUDGET("Pressupost d'aquest mes"),
+        BUDGET,
         /** Goes into the annual reserve. */
-        RESERVE("Reserva d'anuals"),
+        RESERVE,
         /** Goes into a savings goal ({@code potId}). */
-        GOAL("Una guardiola"),
+        GOAL,
         /** Not spent: it stays as savings. */
-        SAVINGS("Estalvi"),
+        SAVINGS,
         /** A refund: it lowers what was spent in {@code category}. */
-        CATEGORY("Torna a la categoria");
+        CATEGORY;
 
-        public final String label;
-
-        Destination(String label) { this.label = label; }
+        /** Name shown to the user. */
+        public String label() { return t("income.destination." + name()); }
 
         public String code() { return name().toLowerCase(); }
 

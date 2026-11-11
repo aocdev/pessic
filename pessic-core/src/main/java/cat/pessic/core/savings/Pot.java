@@ -1,5 +1,6 @@
 package cat.pessic.core.savings;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.common.Ids;
 import cat.pessic.core.common.Money;
 import java.math.BigDecimal;
@@ -50,7 +51,7 @@ public record Pot(String id, Kind kind, String name, BigDecimal target, YearMont
 
     /** The reserve before the user has said how much it holds. */
     public static Pot newReserve() {
-        return new Pot(RESERVE_ID, Kind.RESERVE, "Reserva d'anuals", null, null, BigDecimal.ZERO, BigDecimal.ZERO,
+        return new Pot(RESERVE_ID, Kind.RESERVE, t("savings.reserve.name"), null, null, BigDecimal.ZERO, BigDecimal.ZERO,
                 null, false);
     }
 

@@ -1,5 +1,7 @@
 package cat.pessic.app.common;
 
+import cat.pessic.core.common.I18n;
+import static cat.pessic.core.common.I18n.t;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -7,7 +9,7 @@ import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
-/** Catalan formatting: "1.234,56 €", "Novembre 2026". */
+/** Amounts, dates and months as the user reads them: "1.234,56 €", "9 de novembre de 2026", "Novembre 2026". */
 public final class Format {
     public static final Locale CA = Locale.forLanguageTag("ca-ES");
     private static final DecimalFormat EUR;
@@ -40,17 +42,21 @@ public final class Format {
 
     /** "9 de novembre de 2026" */
     public static String date(java.time.LocalDate d) {
-        String m = monthName(d.getMonthValue()).toLowerCase();
-        return d.getDayOfMonth() + (m.matches("^[aeiouà].*") ? " d'" : " de ") + m + " de " + d.getYear();
+        return t("format.date", d.getDayOfMonth(), ofMonth(d.getMonthValue()), d.getYear());
+    }
+
+    /** The month with its preposition, as in "9 d'octubre": "d'octubre", "de novembre". */
+    public static String ofMonth(int month) {
+        return t("format.ofMonth." + month);
     }
 
     public static String monthName(int month) {
-        String m = java.time.Month.of(month).getDisplayName(TextStyle.FULL_STANDALONE, CA);
+        String m = java.time.Month.of(month).getDisplayName(TextStyle.FULL_STANDALONE, I18n.locale());
         return Character.toUpperCase(m.charAt(0)) + m.substring(1);
     }
 
     public static String month(YearMonth ym) {
-        String m = ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, CA);
+        String m = ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, I18n.locale());
         return Character.toUpperCase(m.charAt(0)) + m.substring(1) + " " + ym.getYear();
     }
 }

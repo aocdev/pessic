@@ -1,5 +1,6 @@
 package cat.pessic.core.savings;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.common.Money;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,11 +16,10 @@ public record PotEntry(String id, String potId, LocalDate date, BigDecimal amoun
                        java.time.YearMonth cycle) {
 
     public enum Kind {
-        CONTRIBUTION("Aportació"), LEFTOVER("Sobrant del mes"), WITHDRAWAL("Retirada"), ADJUST("Ajust del saldo");
+        CONTRIBUTION, LEFTOVER, WITHDRAWAL, ADJUST;
 
-        public final String label;
-
-        Kind(String label) { this.label = label; }
+        /** Name shown to the user. */
+        public String label() { return t("savings.entry." + name()); }
 
         public String code() { return name().toLowerCase(); }
 

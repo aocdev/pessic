@@ -8,7 +8,16 @@ User-facing release notes, in Catalan, are in [WHATS_NEW.md](WHATS_NEW.md).
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+- Every user-visible text moved out of the code into `i18n/strings_ca.properties` (about 615 keys), read
+  through `I18n.t(key, values…)` and `I18n.plural(key, n)`. Only Catalan for now; the screens show exactly
+  the same text as before. `I18nTest` keeps the code and the file in step.
+- Category names, descriptions and examples, income and leftover labels, household types and CSV headers
+  also come from the strings file.
+
+### Fixed
+- The cycle dates in the header said "Del 28 de octubre"; now "Del 28 d'octubre".
+- "1 dies" left in the month on Resum; now "1 dia".
 
 ## [0.1.0] - 2026-11-11
 

@@ -1,5 +1,6 @@
 package cat.pessic.core.savings;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.common.Ids;
 import cat.pessic.core.common.Lists;
 import cat.pessic.core.expense.Movement;
@@ -73,7 +74,7 @@ public final class SavingsOps {
         if (!pot.openingSet()) return setReserveBalance(p, actual, today);
         BigDecimal diff = actual.subtract(Pots.balance(pot, p));
         if (diff.signum() == 0) return p;
-        return addPotEntry(p, potId, today, diff, PotEntry.Kind.ADJUST, "Ajust del saldo");
+        return addPotEntry(p, potId, today, diff, PotEntry.Kind.ADJUST, t("savings.note.adjustment"));
     }
 
     /** The reserve starts being tracked the first time money is sent to it. */

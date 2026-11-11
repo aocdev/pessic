@@ -109,6 +109,22 @@ with **Perfil nou…**.
   Before upgrading an existing file, Pessic copies it to `pessic.db.bak-v<old version>`. Foreign keys are
   checked before each migration commits; a violation rolls the whole migration back.
 
+## Texts and translations
+
+Every text the user sees lives in `pessic-core/src/main/resources/i18n/strings_ca.properties` (UTF-8),
+read through `I18n` (`cat.pessic.core.common`): `t("payment.plan.add")`, or with values
+`t("account.leftInAccount", Format.eur(x))` for `Et quedaran {0} al compte`. Placeholders are
+replaced as plain text, so apostrophes need no escaping. `plural(key, n)` picks `key.one` or `key.other`.
+
+- Keys start with the feature (`dashboard.`, `payment.plan.`, `savings.`…); texts used on several screens are
+  under `common.`. Category names, enum labels, household types and month prepositions ("d'octubre") are
+  built from codes: `category.08.name`, `income.kind.BONUS`, `ine.household.2`, `format.ofMonth.10`.
+- `I18nTest` fails if the code asks for a missing key, if the file has an unused key, or if a call passes a
+  different number of values than its text has placeholders.
+- Only Catalan exists. A translation is a copy of the file (`strings_es.properties`) with the same keys
+  plus a call to `I18n.use(locale)` at start-up. Not translated: CSS class names, file names, log lines,
+  and developer-facing exception details (English), and notes already saved in a profile.
+
 ## Parity with the PWA
 
 `tools/js-oracle.js` runs the original JavaScript formulas headless with Node, and its output
@@ -181,5 +197,5 @@ core and unit-tested) and are saved immediately.
 ## Roadmap
 
 1. Optional: suggest updating limits yearly with INE's CPI by COICOP group (table 76125).
-2. ES/EN translations (`ResourceBundle`).
+2. ES/EN translations: copy `strings_ca.properties`, translate it, and add a language setting.
 3. Installers with `jpackage` (`.msi`, `.dmg`, `.deb`/`.rpm`) via a CI matrix.

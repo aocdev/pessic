@@ -1,5 +1,6 @@
 package cat.pessic.app.account;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.EditDialog;
 import cat.pessic.app.common.Format;
@@ -39,41 +40,38 @@ public final class AccountUi {
             TextField amount = Ui.amountField(null);
             amount.setPrefWidth(140);
             Label error = Ui.errorLabel();
-            Button save = Ui.primary("Desa");
+            Button save = Ui.primary(t("common.save"));
             Runnable submit = () -> {
                 var v = Ui.amount(amount);
-                if (v.isEmpty()) { Ui.showError(error, "Escriu el saldo, per exemple 512,40 (pot ser negatiu)."); return; }
+                if (v.isEmpty()) { Ui.showError(error, t("account.errorBalanceExample")); return; }
                 if (ctx.update(q -> AccountOps.setAccountBalance(q, v.get(), today))) offerFunding(ctx);
             };
             save.setOnAction(e -> submit.run());
             amount.setOnAction(e -> submit.run());
-            HBox ask = new HBox(10, Ui.label("Avui hi tinc", "muted"), amount, Ui.label("€", "muted"), save);
+            HBox ask = new HBox(10, Ui.label(t("account.todayIHave"), "muted"), amount, Ui.label("€", "muted"), save);
             ask.setAlignment(Pos.CENTER_LEFT);
-            return Ui.card(Ui.sectionHead("Quant tens al compte on cobres la nòmina?"),
-                    Ui.wrapped("Mira el saldo a l'app del banc i escriu-lo aquí. A partir d'ara Pessic el seguirà: hi sumarà la "
-                            + "nòmina i hi restarà el que apuntis, i et dirà quant et quedarà abans de tornar a cobrar. "
-                            + "Els comptes d'estalvi o d'inversió no cal: el que hi envies és una sortida més.", "muted"),
+            return Ui.card(Ui.sectionHead(t("account.askTitle")),
+                    Ui.wrapped(t("account.askHint"), "muted"),
                     ask, error);
         }
 
         Cash.Forecast f = Cash.forecast(p, today);
         Label big = Ui.label(Format.eur(f.today()), "kpi");
         if (f.today().signum() < 0) big.getStyleClass().add("text-bad");
-        VBox now = new VBox(2, Ui.label("Al compte avui (estimat)", "muted"), big,
-                Ui.label("des del saldo del " + Format.date(p.ledger().account().since()), "small"));
+        VBox now = new VBox(2, Ui.label(t("common.inAccountTodayEstimated"), "muted"), big,
+                Ui.label(t("account.sinceBalanceOf", Format.date(p.ledger().account().since())), "small"));
         Label before = Ui.label(Format.eur(f.beforePayday()), "kpi");
         if (f.beforePayday().signum() < 0) before.getStyleClass().add("text-bad");
-        VBox end = new VBox(2, Ui.label("Abans de tornar a cobrar", "muted"), before,
-                Ui.label("el " + Format.dayMonth(f.cycle().end()) + ", si pagues el que falta i gastes tot el pressupost", "small"));
-        Button adjust = Ui.link("Ajusta amb el banc", () -> adjust(ctx));
+        VBox end = new VBox(2, Ui.label(t("common.beforeNextPayday"), "muted"), before,
+                Ui.label(t("account.beforePaydayHint", Format.dayMonth(f.cycle().end())), "small"));
+        Button adjust = Ui.link(t("account.adjustWithBank"), () -> adjust(ctx));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         HBox row = new HBox(32, now, end, spacer, adjust);
         row.setAlignment(Pos.CENTER_LEFT);
         VBox card = Ui.card(row);
         if (f.goesNegative()) {
-            card.getChildren().add(Ui.wrapped("Compte: el " + Format.dayMonth(f.lowestDate()) + " el saldo baixaria fins a "
-                    + Format.eur(f.lowest()) + ". Mira «Pagaments fixos» per veure quin pagament no hi cap.", "text-bad"));
+            card.getChildren().add(Ui.wrapped(t("account.goesNegativeWarning", Format.dayMonth(f.lowestDate()), Format.eur(f.lowest())), "text-bad"));
         }
         return card;
     }
@@ -85,12 +83,11 @@ public final class AccountUi {
         TextField amount = Ui.amountField(estimate);
         Label diff = Ui.wrapped("", "small");
         amount.textProperty().addListener((o, a, b) -> diff.setText(differenceText(estimate, Ui.amount(amount))));
-        VBox form = new VBox(12, Ui.row(Ui.field("Saldo que diu el banc avui (€)", amount)), diff,
-                Ui.wrapped("Pessic calcula " + Format.eur(estimate) + ". Si el banc diu una altra cosa, sol ser una despesa "
-                        + "que no has apuntat (o un ingrés). Pessic hi afegeix un ajust per la diferència.", "small"));
-        EditDialog.<BigDecimal>show(ctx.window(), "Ajusta el saldo del compte", form, false, "", () -> {
+        VBox form = new VBox(12, Ui.row(Ui.field(t("common.bankBalanceToday"), amount)), diff,
+                Ui.wrapped(t("account.adjustHint", Format.eur(estimate)), "small"));
+        EditDialog.<BigDecimal>show(ctx.window(), t("account.adjustTitle"), form, false, "", () -> {
             var v = Ui.amount(amount);
-            return v.isPresent() ? EditDialog.Check.ok(v.get()) : EditDialog.Check.fail("Escriu el saldo del banc.");
+            return v.isPresent() ? EditDialog.Check.ok(v.get()) : EditDialog.Check.fail(t("account.errorBankBalance"));
         }).ifPresent(r -> {
             if (r instanceof EditDialog.Save<BigDecimal>(BigDecimal v)) {
                 ctx.update(q -> AccountOps.adjustAccount(q, v, today, null));
@@ -102,10 +99,10 @@ public final class AccountUi {
     public static String differenceText(BigDecimal estimate, Optional<BigDecimal> actual) {
         if (estimate == null || actual.isEmpty()) return "";
         BigDecimal d = actual.get().subtract(estimate);
-        if (d.signum() == 0) return "Quadra amb el que calcula Pessic.";
-        return "Diferència " + Format.eur(d) + (d.signum() < 0
-                ? ": potser hi ha despeses sense apuntar."
-                : ": potser hi ha algun ingrés sense apuntar.");
+        if (d.signum() == 0) return t("account.matches");
+        return t("account.difference", Format.eur(d), (d.signum() < 0
+                ? t("account.maybeUnrecordedExpenses")
+                : t("account.maybeUnrecordedIncome")));
     }
 
     /**
@@ -130,9 +127,9 @@ public final class AccountUi {
         if (hasAnnuals) {
             TextField f = Ui.amountField(needed.min(balance));
             fields.put(Pot.RESERVE_ID, f);
-            rows.getChildren().add(fundRow("Reserva d'anuals", f, needed.signum() > 0
-                    ? "Amb " + Format.eur(needed) + " n'hi ha prou per a tots els anuals dels pròxims 12 mesos."
-                    : "Ja té prou per als pròxims 12 mesos."));
+            rows.getChildren().add(fundRow(t("common.annualReserve"), f, needed.signum() > 0
+                    ? t("account.reserveNeeded", Format.eur(needed))
+                    : t("account.reserveEnough")));
         }
         for (Pot g : goals) {
             TextField f = Ui.amountField(null);
@@ -144,25 +141,23 @@ public final class AccountUi {
             BigDecimal sum = fields.values().stream().map(t -> Ui.amount(t).orElse(BigDecimal.ZERO))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal rest = balance.subtract(sum);
-            left.setText("Et quedaran " + Format.eur(rest) + " al compte");
+            left.setText(t("account.leftInAccount", Format.eur(rest)));
             left.getStyleClass().remove("text-bad");
             if (rest.signum() < 0) left.getStyleClass().add("text-bad");
         };
         fields.values().forEach(t -> t.textProperty().addListener((o, a, b) -> recompute.run()));
         recompute.run();
         VBox form = new VBox(14,
-                Ui.wrapped("Tens " + Format.eur(balance) + " al compte. Si una part ja és per als anuals o per a una guardiola, "
-                        + "passa-la ara: Pessic la treu del saldo del compte i la posa a la reserva o a la guardiola. "
-                        + "Deixa-ho a 0 si no vols apartar res.", "muted"),
+                Ui.wrapped(t("account.fundHint", Format.eur(balance)), "muted"),
                 rows, left);
         form.setPrefWidth(600);
-        EditDialog.<Map<String, BigDecimal>>show(ctx.window(), "Vols apartar diners que ja tens?", form, false, "",
-                "Aparta'ls", () -> {
+        EditDialog.<Map<String, BigDecimal>>show(ctx.window(), t("account.fundTitle"), form, false, "",
+                t("account.fundButton"), () -> {
                     Map<String, BigDecimal> values = new LinkedHashMap<>();
                     for (var en : fields.entrySet()) {
                         String t = en.getValue().getText();
                         var v = t.isBlank() ? Optional.of(BigDecimal.ZERO) : Ui.amount(en.getValue()).filter(x -> x.signum() >= 0);
-                        if (v.isEmpty()) return EditDialog.Check.fail("Hi ha un import que no s'entén.");
+                        if (v.isEmpty()) return EditDialog.Check.fail(t("account.errorAmount"));
                         values.put(en.getKey(), v.get());
                     }
                     return EditDialog.Check.ok(values);

@@ -1,5 +1,7 @@
 package cat.pessic.app.expense;
 
+import static cat.pessic.core.common.I18n.plural;
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.Format;
 import cat.pessic.app.common.SimpleTable;
@@ -31,7 +33,7 @@ public final class MovementsView {
     private MovementsView() {}
 
     enum Period {
-        CYCLE("El mes que mires"), ALL("Tot l'historial"), RANGE("Entre dues dates");
+        CYCLE(t("expense.movements.periodMonth")), ALL(t("expense.movements.periodAll")), RANGE(t("expense.movements.periodRange"));
 
         final String label;
 
@@ -47,17 +49,17 @@ public final class MovementsView {
 
     public static Region build(AppContext ctx) {
         TextField search = new TextField(text);
-        search.setPromptText("Cerca: cafè, súper, Netflix…");
+        search.setPromptText(t("expense.movements.searchPrompt"));
         ComboBox<Category> cat = new ComboBox<>();
         cat.getItems().add(null);
         cat.getItems().addAll(Category.ALL);
         cat.setValue(category);
-        cat.setConverter(converter(c -> c == null ? "Totes les categories" : c.label()));
+        cat.setConverter(converter(c -> c == null ? t("expense.movements.allCategories") : c.label()));
         ComboBox<MovementFilter.Type> kind = new ComboBox<>();
         kind.getItems().add(null);
         kind.getItems().addAll(MovementFilter.Type.values());
         kind.setValue(type);
-        kind.setConverter(converter(t -> t == null ? "Tot" : t.label));
+        kind.setConverter(converter(t -> t == null ? t("expense.movements.allTypes") : t.label()));
         ComboBox<Period> when = new ComboBox<>();
         when.getItems().setAll(Period.values());
         when.setValue(period);
@@ -65,8 +67,8 @@ public final class MovementsView {
         var cycle = ctx.summary().cycle();
         DatePicker fromPicker = Ui.datePicker(from != null ? from : cycle.start());
         DatePicker toPicker = Ui.datePicker(to != null ? to : cycle.end());
-        HBox range = new HBox(8, Ui.field("Des de", fromPicker), Ui.field("Fins a", toPicker));
-        Button clear = Ui.link("Treu els filtres", () -> {
+        HBox range = new HBox(8, Ui.field(t("expense.movements.from"), fromPicker), Ui.field(t("expense.movements.to"), toPicker));
+        Button clear = Ui.link(t("expense.movements.clearFilters"), () -> {
             search.setText("");
             cat.setValue(null);
             kind.setValue(null);
@@ -97,11 +99,7 @@ public final class MovementsView {
             var filter = new MovementFilter(text, category, type, f, t);
             var rows = filter.apply(ctx.profile().movements(), ctx.profile().incomes());
             var totals = MovementFilter.totals(rows);
-            count.setText(rows.size() + (rows.size() == 1 ? " moviment" : " moviments")
-                    + " · gastat " + Format.eur(totals.expenses())
-                    + (totals.refunds().signum() > 0 ? " − devolucions " + Format.eur(totals.refunds())
-                    + " = " + Format.eur(totals.netSpent()) : "")
-                    + (totals.incomes().signum() > 0 ? " · ingressos " + Format.eur(totals.incomes()) : ""));
+            count.setText(t("expense.movements.totals", plural("expense.movements.count", rows.size()), Format.eur(totals.expenses()), (totals.refunds().signum() > 0 ? t("expense.movements.totalsRefunds", Format.eur(totals.refunds()), Format.eur(totals.netSpent())) : ""), (totals.incomes().signum() > 0 ? t("expense.movements.totalsIncome", Format.eur(totals.incomes())) : "")));
             clear.setVisible(!filter.isEmpty() || period != Period.CYCLE);
             results.getChildren().setAll(table(ctx, rows, filter.isEmpty() && period == Period.CYCLE));
         };
@@ -113,8 +111,8 @@ public final class MovementsView {
         toPicker.valueProperty().addListener((o, a, b) -> refresh.run());
         refresh.run();
 
-        HBox filters = Ui.row(Ui.field("Cerca", search), Ui.field("Categoria", cat), Ui.field("Tipus", kind),
-                Ui.field("Període", when));
+        HBox filters = Ui.row(Ui.field(t("expense.movements.search"), search), Ui.field(t("common.category"), cat), Ui.field(t("common.type"), kind),
+                Ui.field(t("common.period"), when));
         HBox.setHgrow(filters.getChildren().get(0), Priority.ALWAYS);
         filters.getChildren().get(1).setStyle("-fx-min-width: 200; -fx-max-width: 260;");
         filters.getChildren().get(2).setStyle("-fx-min-width: 130; -fx-max-width: 150;");
@@ -122,35 +120,34 @@ public final class MovementsView {
         HBox summary = new HBox(12, count, clear);
         summary.setAlignment(Pos.CENTER_LEFT);
 
-        Button export = new Button("Exporta (.csv)…");
+        Button export = new Button(t("common.exportCsv"));
         export.setOnAction(e -> ctx.exportMovementsCsv(true));
         return Ui.page(ExpenseForm.build(ctx),
-                Ui.card(Ui.sectionHead("Moviments", export), filters, range, summary, results));
+                Ui.card(Ui.sectionHead(t("common.movements"), export), filters, range, summary, results));
     }
 
     private static Node table(AppContext ctx, List<MovementFilter.Row> rows, boolean unfiltered) {
-        SimpleTable t = new SimpleTable(1, "Data", "Concepte", "Categoria", ">Import", "");
+        SimpleTable t = new SimpleTable(1, t("common.date"), t("common.concept"), t("common.category"), ">" + t("common.amount"), "");
         for (MovementFilter.Row r : rows) {
             if (r.movement() != null) expenseRow(ctx, t, r.movement());
             else incomeRow(ctx, t, r.income());
         }
         if (t.isEmpty()) {
             t.addMessage(unfiltered
-                    ? "Encara no has apuntat res aquest mes. Afegeix la primera despesa amb el formulari de dalt, "
-                    + "o marca com a pagat un pagament fix."
-                    : "Cap moviment coincideix amb la cerca.");
+                    ? t("expense.movements.emptyMonth")
+                    : t("expense.movements.noMatches"));
         }
         return t.node();
     }
 
     private static void expenseRow(AppContext ctx, SimpleTable t, Movement m) {
         HBox concept = new HBox(6, SimpleTable.text(m.concept()));
-        if (m.isFixed()) concept.getChildren().add(Ui.badge("fix", "st-n"));
-        if (m.isAnnual()) concept.getChildren().add(Ui.badge("anual", "st-n"));
-        else if (m.fromReserve()) concept.getChildren().add(Ui.badge("reserva", "st-n"));
-        if (m.goalId() != null) concept.getChildren().add(Ui.badge("de «" + potName(ctx, m.goalId()) + "»", "st-n"));
+        if (m.isFixed()) concept.getChildren().add(Ui.badge(t("expense.movements.badgeFixed"), "st-n"));
+        if (m.isAnnual()) concept.getChildren().add(Ui.badge(t("common.annual"), "st-n"));
+        else if (m.fromReserve()) concept.getChildren().add(Ui.badge(t("expense.movements.badgeReserve"), "st-n"));
+        if (m.goalId() != null) concept.getChildren().add(Ui.badge(t("expense.movements.badgeFromGoal", potName(ctx, m.goalId())), "st-n"));
         boolean planned = m.scheduledId() != null;
-        Button del = Ui.link(planned ? "Desfés el pagament" : "Esborra", () -> {
+        Button del = Ui.link(planned ? t("expense.movements.undoPayment") : t("common.delete"), () -> {
             if (planned) ctx.update(p -> PaymentOps.unmarkPaid(p, m.scheduledId()));
             else ctx.update(p -> ExpenseOps.deleteMovement(p, m.id()));
         });
@@ -160,21 +157,21 @@ public final class MovementsView {
     }
 
     private static void incomeRow(AppContext ctx, SimpleTable t, Income i) {
-        HBox concept = new HBox(6, SimpleTable.text(i.concept().isEmpty() ? i.kind().label : i.concept()));
+        HBox concept = new HBox(6, SimpleTable.text(i.concept().isEmpty() ? i.kind().label() : i.concept()));
         String where = switch (i.destination()) {
-            case BUDGET -> i.kind() == Income.Kind.CARRY ? "sobrant del mes anterior" : "al pressupost del mes";
-            case RESERVE -> "a la reserva";
-            case GOAL -> "a «" + potName(ctx, i.potId()) + "»";
-            case SAVINGS -> "a l'estalvi";
-            case CATEGORY -> "devolució";
+            case BUDGET -> i.kind() == Income.Kind.CARRY ? t("expense.movements.incomeCarried") : t("expense.movements.incomeToBudget");
+            case RESERVE -> t("expense.movements.incomeToReserve");
+            case GOAL -> t("expense.movements.incomeToGoal", potName(ctx, i.potId()));
+            case SAVINGS -> t("expense.movements.incomeToSavings");
+            case CATEGORY -> t("expense.movements.incomeRefund");
         };
         concept.getChildren().add(Ui.badge(where, i.isRefund() ? "st-n" : "st-ok"));
-        Node category = i.category() != null ? Ui.categoryText(i.category(), "muted") : Ui.label(i.kind().label, "muted");
+        Node category = i.category() != null ? Ui.categoryText(i.category(), "muted") : Ui.label(i.kind().label(), "muted");
         Node action;
         if (i.kind() == Income.Kind.CARRY) {
-            action = Ui.label("ve del tancament", "small");
+            action = Ui.label(t("expense.movements.fromMonthClose"), "small");
         } else {
-            Button del = Ui.link("Esborra", () -> ctx.update(p -> IncomeOps.removeIncome(p, i.id())));
+            Button del = Ui.link(t("common.delete"), () -> ctx.update(p -> IncomeOps.removeIncome(p, i.id())));
             del.getStyleClass().add("danger-link");
             action = del;
         }
@@ -183,8 +180,8 @@ public final class MovementsView {
     }
 
     private static String potName(AppContext ctx, String id) {
-        if (Pot.RESERVE_ID.equals(id)) return "reserva";
-        return ctx.profile().ledger().pot(id).map(Pot::name).orElse("guardiola");
+        if (Pot.RESERVE_ID.equals(id)) return t("expense.movements.badgeReserve");
+        return ctx.profile().ledger().pot(id).map(Pot::name).orElse(t("expense.movements.badgeGoal"));
     }
 
     private static <T> javafx.util.StringConverter<T> converter(java.util.function.Function<T, String> f) {

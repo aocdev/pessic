@@ -1,5 +1,6 @@
 package cat.pessic.app.income;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.common.Ui;
 import cat.pessic.core.income.Income;
 import cat.pessic.core.savings.Pot;
@@ -29,15 +30,15 @@ public final class DestinationPicker {
             @Override public String toString(Pot p) { return p == null ? "" : p.name(); }
             @Override public Pot fromString(String s) { return null; }
         });
-        goal.setPromptText(goals.isEmpty() ? "No en tens cap" : "Tria-la");
+        goal.setPromptText(goals.isEmpty() ? t("income.destination.noEnTensCap") : t("income.destination.triaLa"));
         goals.stream().filter(g -> g.id().equals(goalId)).findFirst().ifPresent(goal::setValue);
         if (goal.getValue() == null && goals.size() == 1) goal.setValue(goals.get(0));
-        toGoal = radio("Una guardiola", Income.Destination.GOAL);
+        toGoal = radio(t("income.destination.unaGuardiola"), Income.Destination.GOAL);
         toGoal.setDisable(goals.isEmpty());
         goal.disableProperty().bind(toGoal.selectedProperty().not());
-        radio("El pressupost d'aquest mes", Income.Destination.BUDGET);
-        radio("La reserva d'anuals", Income.Destination.RESERVE);
-        radio("Estalvi (no el toco)", Income.Destination.SAVINGS);
+        radio(t("income.destination.elPressupostDAquestMes"), Income.Destination.BUDGET);
+        radio(t("common.theAnnualReserve"), Income.Destination.RESERVE);
+        radio(t("income.destination.estalviNoElToco"), Income.Destination.SAVINGS);
         if (preselected != null) {
             group.getToggles().stream().filter(t -> t.getUserData() == preselected).findFirst()
                     .ifPresent(t -> t.setSelected(true));
@@ -61,8 +62,8 @@ public final class DestinationPicker {
 
     /** An error message, or null when the choice is complete. */
     public String check() {
-        if (value() == null) return "Tria on van aquests diners.";
-        if (value() == Income.Destination.GOAL && goal.getValue() == null) return "Tria la guardiola.";
+        if (value() == null) return t("income.destination.triaOnVanAquestsDiners");
+        if (value() == Income.Destination.GOAL && goal.getValue() == null) return t("common.errorPickGoal");
         return null;
     }
 
@@ -76,7 +77,7 @@ public final class DestinationPicker {
         FlowPane options = new FlowPane(18, 8, budget, reserve, goalBox, savings);
         options.setAlignment(Pos.CENTER_LEFT);
         options.setPrefWrapLength(600);
-        return new VBox(6, Ui.label("On van aquests diners?", "field-label"), options);
+        return new VBox(6, Ui.label(t("income.destination.onVanAquestsDiners"), "field-label"), options);
     }
 
     private javafx.scene.control.Toggle find(Income.Destination d) {

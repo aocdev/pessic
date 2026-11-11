@@ -1,5 +1,6 @@
 package cat.pessic.app.expense;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.Ui;
 import cat.pessic.app.income.DestinationPicker;
@@ -45,9 +46,9 @@ public final class ExpenseForm {
         modeBar.getStyleClass().add("segmented");
         for (Mode m : Mode.values()) {
             ToggleButton b = new ToggleButton(switch (m) {
-                case EXPENSE -> "Despesa";
-                case INCOME -> "Ingrés";
-                case REFUND -> "Devolució";
+                case EXPENSE -> t("expense.form.modeExpense");
+                case INCOME -> t("expense.form.modeIncome");
+                case REFUND -> t("expense.form.modeRefund");
             });
             b.setToggleGroup(modes);
             b.setSelected(m == mode);
@@ -66,7 +67,7 @@ public final class ExpenseForm {
             case INCOME -> income(ctx);
             case REFUND -> refund(ctx);
         };
-        card.getChildren().add(0, Ui.sectionHead("Apunta", modeBar));
+        card.getChildren().add(0, Ui.sectionHead(t("expense.form.title"), modeBar));
         return card;
     }
 
@@ -107,22 +108,22 @@ public final class ExpenseForm {
     private static VBox expense(AppContext ctx) {
         DatePicker date = datePicker(ctx);
         TextField concept = new TextField();
-        concept.setPromptText("Súper, benzina, cafè…");
+        concept.setPromptText(t("expense.form.expensePrompt"));
         ComboBox<Category> category = Ui.categoryBox(lastCategory);
         Label categoryHelp = Ui.categoryHelp(category);
         TextField amount = Ui.amountField(null);
         amount.setPrefWidth(120);
         ComboBox<String> paidFrom = paidFromBox(ctx);
         Label error = Ui.errorLabel();
-        var add = Ui.primary("Afegeix");
+        var add = Ui.primary(t("expense.form.add"));
 
         Runnable submit = () -> {
             Optional<BigDecimal> imp = Ui.amount(amount).filter(v -> v.signum() > 0);
             LocalDate d = dateOf(date);
             String c = concept.getText() == null ? "" : concept.getText().strip();
-            if (d == null) { Ui.showError(error, "Tria una data."); return; }
-            if (c.isEmpty()) { Ui.showError(error, "Escriu un concepte."); concept.requestFocus(); return; }
-            if (imp.isEmpty()) { Ui.showError(error, "Escriu un import més gran que zero, per exemple 12,50."); amount.requestFocus(); return; }
+            if (d == null) { Ui.showError(error, t("common.errorPickDate")); return; }
+            if (c.isEmpty()) { Ui.showError(error, t("common.errorConcept")); concept.requestFocus(); return; }
+            if (imp.isEmpty()) { Ui.showError(error, t("expense.form.errorAmountExample")); amount.requestFocus(); return; }
             lastDate = d.equals(ctx.today()) ? null : d;
             lastCategory = category.getValue();
             focusAfterRedraw = true;
@@ -136,13 +137,12 @@ public final class ExpenseForm {
         amount.setOnAction(e -> submit.run());
         focusLater(concept);
 
-        HBox from = new HBox(8, Ui.label("Es paga amb", "muted"), paidFrom);
+        HBox from = new HBox(8, Ui.label(t("expense.form.paidWith"), "muted"), paidFrom);
         from.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        return Ui.card(line(Ui.field("Data", date), Ui.field("Concepte", concept), Ui.field("Categoria", category),
-                        Ui.field("Import (€)", amount), add),
+        return Ui.card(line(Ui.field(t("common.date"), date), Ui.field(t("common.concept"), concept), Ui.field(t("common.category"), category),
+                        Ui.field(t("common.amountEur"), amount), add),
                 categoryHelp, from,
-                Ui.wrapped("Els pagaments fixos es marquen a «Pagaments fixos». Un pagament anual o una despesa que pagues "
-                        + "amb una guardiola (per exemple el viatge) no compta al límit del mes.", "small"),
+                Ui.wrapped(t("expense.form.expenseHint"), "small"),
                 error);
     }
 
@@ -156,9 +156,9 @@ public final class ExpenseForm {
         box.setValue(MONTH);
         box.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(String id) {
-                if (id == null || id.equals(MONTH)) return "Els diners del mes";
-                if (id.equals(Pot.RESERVE_ID)) return "La reserva d'anuals";
-                return "La guardiola «" + goals.stream().filter(g -> g.id().equals(id)).map(Pot::name).findFirst().orElse(id) + "»";
+                if (id == null || id.equals(MONTH)) return t("expense.form.paidWithMonth");
+                if (id.equals(Pot.RESERVE_ID)) return t("common.theAnnualReserve");
+                return t("expense.form.paidWithGoal", goals.stream().filter(g -> g.id().equals(id)).map(Pot::name).findFirst().orElse(id));
             }
             @Override public String fromString(String s) { return null; }
         });
@@ -170,18 +170,18 @@ public final class ExpenseForm {
     private static VBox income(AppContext ctx) {
         DatePicker date = datePicker(ctx);
         TextField concept = new TextField();
-        concept.setPromptText("Paga de juny, Bizum del sopar, venda…");
+        concept.setPromptText(t("expense.form.incomePrompt"));
         ComboBox<Income.Kind> kind = kindBox(Income.Kind.OTHER);
         TextField amount = Ui.amountField(null);
         DestinationPicker dest = new DestinationPicker(ctx.profile().ledger().activeGoals(), null, null);
         Label error = Ui.errorLabel();
-        var add = Ui.primary("Afegeix");
+        var add = Ui.primary(t("expense.form.add"));
 
         Runnable submit = () -> {
             Optional<BigDecimal> imp = Ui.amount(amount).filter(v -> v.signum() > 0);
             LocalDate d = dateOf(date);
-            if (d == null) { Ui.showError(error, "Tria una data."); return; }
-            if (imp.isEmpty()) { Ui.showError(error, "Escriu un import més gran que zero."); amount.requestFocus(); return; }
+            if (d == null) { Ui.showError(error, t("common.errorPickDate")); return; }
+            if (imp.isEmpty()) { Ui.showError(error, t("expense.form.errorAmount")); amount.requestFocus(); return; }
             String bad = dest.check();
             if (bad != null) { Ui.showError(error, bad); return; }
             lastDate = d.equals(ctx.today()) ? null : d;
@@ -194,11 +194,10 @@ public final class ExpenseForm {
         concept.setOnAction(e -> amount.requestFocus());
         focusLater(concept);
 
-        return Ui.card(line(Ui.field("Data", date), Ui.field("Concepte", concept), Ui.field("Tipus", kind),
-                        Ui.field("Import (€)", amount), add),
+        return Ui.card(line(Ui.field(t("common.date"), date), Ui.field(t("common.concept"), concept), Ui.field(t("common.type"), kind),
+                        Ui.field(t("common.amountEur"), amount), add),
                 dest.node(),
-                Ui.wrapped("El sou de cada mes ja hi és: aquí només hi va el que entra a més (pagues extra, bonus, algú que "
-                        + "et torna diners…). Si va al pressupost, augmenta el que pots gastar aquest mes; si no, s'aparta.",
+                Ui.wrapped(t("expense.form.incomeHint"),
                         "small"),
                 error);
     }
@@ -208,7 +207,7 @@ public final class ExpenseForm {
         box.getItems().setAll(Income.Kind.EXTRA_PAY, Income.Kind.BONUS, Income.Kind.OTHER);
         box.setValue(selected);
         box.setConverter(new javafx.util.StringConverter<>() {
-            @Override public String toString(Income.Kind k) { return k == null ? "" : k.label; }
+            @Override public String toString(Income.Kind k) { return k == null ? "" : k.label(); }
             @Override public Income.Kind fromString(String s) { return null; }
         });
         return box;
@@ -219,19 +218,19 @@ public final class ExpenseForm {
     private static VBox refund(AppContext ctx) {
         DatePicker date = datePicker(ctx);
         TextField concept = new TextField();
-        concept.setPromptText("Jersei tornat, abonament…");
+        concept.setPromptText(t("expense.form.refundPrompt"));
         ComboBox<Category> category = Ui.categoryBox(lastCategory);
         TextField amount = Ui.amountField(null);
         Label error = Ui.errorLabel();
-        var add = Ui.primary("Afegeix");
+        var add = Ui.primary(t("expense.form.add"));
 
         Runnable submit = () -> {
             Optional<BigDecimal> imp = Ui.amount(amount).filter(v -> v.signum() > 0);
             LocalDate d = dateOf(date);
             String c = concept.getText() == null ? "" : concept.getText().strip();
-            if (d == null) { Ui.showError(error, "Tria una data."); return; }
-            if (c.isEmpty()) { Ui.showError(error, "Escriu què t'han tornat."); concept.requestFocus(); return; }
-            if (imp.isEmpty()) { Ui.showError(error, "Escriu un import més gran que zero."); amount.requestFocus(); return; }
+            if (d == null) { Ui.showError(error, t("common.errorPickDate")); return; }
+            if (c.isEmpty()) { Ui.showError(error, t("expense.form.errorRefundConcept")); concept.requestFocus(); return; }
+            if (imp.isEmpty()) { Ui.showError(error, t("expense.form.errorAmount")); amount.requestFocus(); return; }
             lastDate = d.equals(ctx.today()) ? null : d;
             lastCategory = category.getValue();
             focusAfterRedraw = true;
@@ -243,10 +242,9 @@ public final class ExpenseForm {
         amount.setOnAction(e -> submit.run());
         focusLater(concept);
 
-        return Ui.card(line(Ui.field("Data", date), Ui.field("Concepte", concept), Ui.field("Categoria", category),
-                        Ui.field("Import (€)", amount), add),
-                Ui.wrapped("Una devolució torna els diners a la categoria on els havies gastat: resta del que hi has gastat "
-                        + "aquest mes.", "small"),
+        return Ui.card(line(Ui.field(t("common.date"), date), Ui.field(t("common.concept"), concept), Ui.field(t("common.category"), category),
+                        Ui.field(t("common.amountEur"), amount), add),
+                Ui.wrapped(t("expense.form.refundHint"), "small"),
                 error);
     }
 

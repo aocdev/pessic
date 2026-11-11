@@ -1,5 +1,6 @@
 package cat.pessic.app.income;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.common.EditDialog;
 import cat.pessic.app.common.Format;
 import cat.pessic.app.common.Ui;
@@ -28,16 +29,16 @@ public final class PaychecksFields {
         count.setValue(p.count());
         count.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(Integer n) {
-                return n == null ? "" : n == 14 ? "14 (amb dues pagues extra)" : "12 (o extres prorratejades)";
+                return n == null ? "" : n == 14 ? t("income.paychecks.fourteen") : t("income.paychecks.twelve");
             }
             @Override public Integer fromString(String s) { return null; }
         });
         amount = Ui.amountField(p.extraAmount());
-        amount.setPromptText("igual que el sou");
+        amount.setPromptText(t("income.paychecks.sameAsSalary"));
         first.setValue(p.months().get(0));
         second.setValue(p.months().size() > 1 ? p.months().get(1) : 12);
-        extras = Ui.row(Ui.field("Import de cada paga extra (€)", amount), Ui.field("Primer mes", first),
-                Ui.field("Segon mes", second));
+        extras = Ui.row(Ui.field(t("income.paychecks.extraAmount"), amount), Ui.field(t("income.paychecks.firstMonth"), first),
+                Ui.field(t("income.paychecks.secondMonth"), second));
         Runnable sync = () -> {
             boolean on = count.getValue() != null && count.getValue() == 14;
             extras.setVisible(on);
@@ -62,13 +63,13 @@ public final class PaychecksFields {
         if (count.getValue() == null || count.getValue() == 12) return EditDialog.Check.ok(Paychecks.TWELVE);
         Optional<BigDecimal> a = amount.getText().isBlank() ? Optional.empty()
                 : Ui.amount(amount).filter(v -> v.signum() > 0);
-        if (!amount.getText().isBlank() && a.isEmpty()) return EditDialog.Check.fail("L'import de la paga extra no s'entén.");
+        if (!amount.getText().isBlank() && a.isEmpty()) return EditDialog.Check.fail(t("income.paychecks.errorAmount"));
         if (first.getValue() == null || second.getValue() == null || first.getValue().equals(second.getValue()))
-            return EditDialog.Check.fail("Tria dos mesos diferents per a les pagues extra.");
+            return EditDialog.Check.fail(t("income.paychecks.errorMonths"));
         return EditDialog.Check.ok(new Paychecks(14, a.orElse(null), List.of(first.getValue(), second.getValue())));
     }
 
     public Region node(String help) {
-        return new VBox(8, Ui.row(Ui.field("Pagues a l'any", count)), extras, Ui.wrapped(help, "small"));
+        return new VBox(8, Ui.row(Ui.field(t("income.paychecks.perYear"), count)), extras, Ui.wrapped(help, "small"));
     }
 }

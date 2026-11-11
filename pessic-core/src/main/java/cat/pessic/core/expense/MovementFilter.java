@@ -1,5 +1,6 @@
 package cat.pessic.core.expense;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.Category;
 import cat.pessic.core.income.Income;
 import java.math.BigDecimal;
@@ -23,11 +24,10 @@ import java.util.Locale;
 public record MovementFilter(String text, Category category, Type type, LocalDate from, LocalDate to) {
 
     public enum Type {
-        EXPENSE("Despeses"), INCOME("Ingressos"), REFUND("Devolucions");
+        EXPENSE, INCOME, REFUND;
 
-        public final String label;
-
-        Type(String label) { this.label = label; }
+        /** Name shown to the user. */
+        public String label() { return t("expense.filter.type." + name()); }
     }
 
     /** One row: an expense ({@code movement}) or an income or refund ({@code income}). */
@@ -36,7 +36,7 @@ public record MovementFilter(String text, Category category, Type type, LocalDat
 
         public String concept() {
             if (movement != null) return movement.concept();
-            return income.concept().isEmpty() ? income.kind().label : income.concept();
+            return income.concept().isEmpty() ? income.kind().label() : income.concept();
         }
 
         public Category category() { return movement != null ? movement.category() : income.category(); }

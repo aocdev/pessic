@@ -1,5 +1,6 @@
 package cat.pessic.core.monthclose;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.Category;
 import cat.pessic.core.common.Money;
 import java.math.BigDecimal;
@@ -27,11 +28,10 @@ public record CycleClose(YearMonth cycle, LocalDate closedOn, BigDecimal income,
                          Leftover leftoverTo, Map<Category, CategoryLine> categories) {
 
     public enum Leftover {
-        SAVINGS("Estalvi"), GOAL("Una guardiola"), RESERVE("Reserva d'anuals"), CARRY("El mes següent");
+        SAVINGS, GOAL, RESERVE, CARRY;
 
-        public final String label;
-
-        Leftover(String label) { this.label = label; }
+        /** Name shown to the user. */
+        public String label() { return t("monthclose.leftover." + name()); }
 
         public String code() { return name().toLowerCase(); }
 

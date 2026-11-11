@@ -1,5 +1,6 @@
 package cat.pessic.app.income;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.EditDialog;
 import cat.pessic.app.common.Format;
@@ -18,19 +19,18 @@ public final class IncomeDialog {
     public static void paycheck(AppContext ctx, CycleSummary.ExpectedPaycheck expected) {
         var cycle = ctx.summary().cycle();
         var date = Ui.datePicker(cycle.contains(ctx.today()) ? ctx.today() : cycle.start());
-        TextField concept = new TextField("Paga extra de " + Format.monthName(expected.month().getMonthValue()).toLowerCase());
+        TextField concept = new TextField(t("income.paycheck.concept", Format.monthName(expected.month().getMonthValue()).toLowerCase()));
         TextField amount = Ui.amountField(expected.amount());
         DestinationPicker dest = new DestinationPicker(ctx.profile().ledger().activeGoals(), null, null);
-        VBox form = new VBox(12, Ui.row(Ui.field("Data", date), Ui.field("Concepte", concept), Ui.field("Import (€)", amount)),
+        VBox form = new VBox(12, Ui.row(Ui.field(t("common.date"), date), Ui.field(t("common.concept"), concept), Ui.field(t("common.amountEur"), amount)),
                 dest.node(),
-                Ui.wrapped("Si la poses al pressupost d'aquest mes, la pots gastar ara. Si la guardes a la reserva o en una "
-                        + "guardiola, queda apartada per al que vindrà.", "small"));
+                Ui.wrapped(t("income.paycheck.hint"), "small"));
         record Spec(LocalDate date, String concept, java.math.BigDecimal amount) {}
-        EditDialog.<Spec>show(ctx.window(), "Has cobrat la paga extra", form, false, "", () -> {
+        EditDialog.<Spec>show(ctx.window(), t("income.paycheck.title"), form, false, "", () -> {
             LocalDate d = date.getConverter().fromString(date.getEditor().getText());
-            if (d == null) return EditDialog.Check.fail("Tria una data.");
+            if (d == null) return EditDialog.Check.fail(t("common.errorPickDate"));
             var imp = Ui.amount(amount).filter(v -> v.signum() > 0);
-            if (imp.isEmpty()) return EditDialog.Check.fail("Escriu un import més gran que zero.");
+            if (imp.isEmpty()) return EditDialog.Check.fail(t("income.paycheck.errorAmount"));
             String bad = dest.check();
             if (bad != null) return EditDialog.Check.fail(bad);
             return EditDialog.Check.ok(new Spec(d, concept.getText().strip(), imp.get()));

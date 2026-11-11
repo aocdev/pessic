@@ -1,5 +1,6 @@
 package cat.pessic.core.monthclose;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.account.AccountOps;
 import cat.pessic.core.budget.BudgetCalculator;
 import cat.pessic.core.budget.Category;
@@ -134,7 +135,7 @@ public final class MonthClose {
             case CARRY -> {
                 LocalDate next = new BudgetCalculator(p.config()).cycle(key.plusMonths(1)).start();
                 List<Income> incomes = new ArrayList<>(q.incomes());
-                incomes.add(new Income("carry@" + key, next, "Sobrant de " + key, leftover, Income.Kind.CARRY,
+                incomes.add(new Income("carry@" + key, next, t("monthclose.note.carry", key), leftover, Income.Kind.CARRY,
                         Income.Destination.BUDGET, null, null, carryId(key)));
                 q = q.withLedger(q.ledger().withIncomes(incomes));
                 // set aside for next month: it shows up there as extra money
@@ -175,7 +176,7 @@ public final class MonthClose {
 
     private static Profile post(Profile p, String potId, String id, LocalDate date, BigDecimal amount,
                                 PotEntry.Kind kind, YearMonth key) {
-        Profile q = SavingsOps.addPotEntry(p, potId, date, amount, kind, kind.label + " de " + key);
+        Profile q = SavingsOps.addPotEntry(p, potId, date, amount, kind, t("monthclose.note.entry", kind.label(), key));
         // replace the random id with a stable one linked to the cycle
         List<PotEntry> entries = new ArrayList<>(q.ledger().entries());
         PotEntry last = entries.remove(entries.size() - 1);

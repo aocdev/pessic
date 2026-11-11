@@ -1,5 +1,6 @@
 package cat.pessic.app.common;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.Category;
 import cat.pessic.core.common.AmountParser;
 import java.math.BigDecimal;
@@ -131,7 +132,7 @@ public final class Ui {
      */
     public static javafx.scene.control.DatePicker datePicker(java.time.LocalDate initial) {
         var picker = new javafx.scene.control.DatePicker(initial);
-        var fmt = java.time.format.DateTimeFormatter.ofPattern("d/M/uuuu");
+        var fmt = java.time.format.DateTimeFormatter.ofPattern(t("format.dateInput"));
         picker.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(java.time.LocalDate d) {
                 return d == null ? "" : d.format(fmt);
@@ -160,7 +161,7 @@ public final class Ui {
         box.setPromptText("—");
         box.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(Integer n) {
-                return n == null ? "" : n >= 5 ? "5 o més" : n == 1 ? "1 persona" : n + " persones";
+                return n == null ? "" : n >= 5 ? t("common.ui.membersFiveOrMore") : n == 1 ? t("common.ui.membersOne") : t("common.ui.membersMany", n);
             }
             @Override public Integer fromString(String s) { return null; }
         });
@@ -192,7 +193,7 @@ public final class Ui {
         Label help = wrapped("", "small");
         Runnable update = () -> {
             Category c = box.getValue();
-            help.setText(c == null ? "" : c.description() + " Per exemple: " + c.examples() + ".");
+            help.setText(c == null ? "" : t("common.ui.categoryHelp", c.description(), c.examples()));
         };
         box.valueProperty().addListener((o, a, b) -> update.run());
         update.run();
@@ -203,7 +204,7 @@ public final class Ui {
     public static Label categoryText(Category c, String... styles) {
         Label l = label(c.displayName(), styles);
         javafx.scene.control.Tooltip t = new javafx.scene.control.Tooltip(
-                c.label() + "\n" + c.description() + "\nPer exemple: " + c.examples());
+                t("common.ui.categoryTooltipWithName", c.label(), c.description(), c.examples()));
         t.setWrapText(true);
         t.setMaxWidth(420);
         l.setTooltip(t);
@@ -227,7 +228,7 @@ public final class Ui {
             }
             setText(c.label());
             if (withExamples) {
-                javafx.scene.control.Tooltip t = new javafx.scene.control.Tooltip(c.description() + "\nPer exemple: " + c.examples());
+                javafx.scene.control.Tooltip t = new javafx.scene.control.Tooltip(t("common.ui.categoryTooltip", c.description(), c.examples()));
                 t.setWrapText(true);
                 t.setMaxWidth(420);
                 setTooltip(t);
@@ -261,7 +262,7 @@ public final class Ui {
 
     public static boolean confirm(Window owner, String title, String text, String okText) {
         ButtonType ok = new ButtonType(okText, ButtonType.OK.getButtonData());
-        Alert a = new Alert(Alert.AlertType.CONFIRMATION, text, ok, new ButtonType("Cancel·la", ButtonType.CANCEL.getButtonData()));
+        Alert a = new Alert(Alert.AlertType.CONFIRMATION, text, ok, new ButtonType(t("common.cancel"), ButtonType.CANCEL.getButtonData()));
         a.initOwner(owner);
         a.setTitle(title);
         a.setHeaderText(null);
@@ -280,7 +281,7 @@ public final class Ui {
         for (int i = 0; i < options.length; i++) {
             types[i] = new ButtonType(options[i], i == 0 ? ButtonBar.ButtonData.OK_DONE : ButtonBar.ButtonData.OTHER);
         }
-        ButtonType cancel = new ButtonType("Cancel·la", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType cancel = new ButtonType(t("common.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         Alert a = new Alert(Alert.AlertType.NONE, "", types);
         a.getButtonTypes().add(cancel);
         a.initOwner(owner);
@@ -303,8 +304,8 @@ public final class Ui {
 
     /** "Edita · Esborra" link buttons for a table row. */
     public static HBox rowActions(Runnable edit, Runnable delete) {
-        Button e = link("Edita", edit);
-        Button d = link("Esborra", delete);
+        Button e = link(t("common.edit"), edit);
+        Button d = link(t("common.delete"), delete);
         d.getStyleClass().add("danger-link");
         HBox box = new HBox(12, e, d);
         box.setAlignment(Pos.CENTER_RIGHT);

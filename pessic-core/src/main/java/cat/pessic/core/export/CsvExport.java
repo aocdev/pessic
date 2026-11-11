@@ -1,5 +1,6 @@
 package cat.pessic.core.export;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.CycleSummary;
 import cat.pessic.core.budget.PayCycle;
 import cat.pessic.core.common.Money;
@@ -43,27 +44,26 @@ public final class CsvExport {
                                  int payday) throws IOException {
         record Line(java.time.LocalDate date, String concept, String[] fields) {}
         java.util.function.Function<String, String> potName = id -> id == null ? "" : Pot.RESERVE_ID.equals(id)
-                ? "Reserva d'anuals" : pots.stream().filter(x -> x.id().equals(id)).map(Pot::name).findFirst().orElse(id);
+                ? t("savings.reserve.name") : pots.stream().filter(x -> x.id().equals(id)).map(Pot::name).findFirst().orElse(id);
         List<Line> lines = new java.util.ArrayList<>();
         for (Movement m : movements) {
             lines.add(new Line(m.date(), m.concept(), new String[]{m.date().format(DATE),
-                    PayCycle.containing(m.date(), payday).key().toString(), "Despesa", m.concept(), m.category().code(),
-                    m.category().displayName(), amount(m.amount()), m.fromReserve() ? "sí" : "no", m.isFixed() ? "sí" : "no",
-                    m.goalId() != null ? "Pagat amb " + potName.apply(m.goalId()) : ""}));
+                    PayCycle.containing(m.date(), payday).key().toString(), t("export.csv.type.expense"), m.concept(), m.category().code(),
+                    m.category().displayName(), amount(m.amount()), m.fromReserve() ? t("export.csv.yes") : t("export.csv.no"), m.isFixed() ? t("export.csv.yes") : t("export.csv.no"),
+                    m.goalId() != null ? t("export.csv.paidWith", potName.apply(m.goalId())) : ""}));
         }
         for (Income i : incomes) {
             String dest = switch (i.destination()) {
                 case RESERVE, GOAL -> potName.apply(i.potId());
-                default -> i.destination().label;
+                default -> i.destination().label();
             };
             lines.add(new Line(i.date(), i.concept(), new String[]{i.date().format(DATE),
-                    PayCycle.containing(i.date(), payday).key().toString(), i.isRefund() ? "Devolució" : "Ingrés",
-                    i.concept().isEmpty() ? i.kind().label : i.concept(), i.category() == null ? "" : i.category().code(),
-                    i.category() == null ? i.kind().label : i.category().displayName(), amount(i.amount()), "no", "no", dest}));
+                    PayCycle.containing(i.date(), payday).key().toString(), i.isRefund() ? t("export.csv.type.refund") : t("export.csv.type.income"),
+                    i.concept().isEmpty() ? i.kind().label() : i.concept(), i.category() == null ? "" : i.category().code(),
+                    i.category() == null ? i.kind().label() : i.category().displayName(), amount(i.amount()), t("export.csv.no"), t("export.csv.no"), dest}));
         }
         Writer w = open(out);
-        row(w, "Data", "Cicle", "Tipus", "Concepte", "Codi", "Categoria", "Import", "Paga la reserva", "Pagament fix",
-                "Destinació");
+        row(w, t("export.csv.movements.header").split(";"));
         lines.sort(Comparator.comparing(Line::date).thenComparing(Line::concept));
         for (Line l : lines) row(w, l.fields());
         w.flush();
@@ -72,10 +72,9 @@ public final class CsvExport {
     /** One row per cycle of the history, oldest first. */
     public static void history(OutputStream out, List<History.Row> rows) throws IOException {
         Writer w = open(out);
-        row(w, "Cicle", "Estat", "Ingressos", "Ingressos extra", "Pressupost", "Gastat", "A guardioles", "Estalvi",
-                "% estalvi", "Diferència amb el banc");
+        row(w, t("export.csv.history.header").split(";"));
         for (History.Row r : rows) {
-            row(w, r.cycle().toString(), r.closed() ? "tancat" : "estimat", amount(r.income()), amount(r.extra()),
+            row(w, r.cycle().toString(), r.closed() ? t("export.csv.closed") : t("export.csv.estimated"), amount(r.income()), amount(r.extra()),
                     amount(r.budget()), amount(r.spent()), amount(r.toPots()), amount(r.saved()),
                     r.savingsRate().toPlainString(), r.bankDifference() == null ? "" : amount(r.bankDifference()));
         }
@@ -85,7 +84,7 @@ public final class CsvExport {
     /** One row per category for a cycle: limit, what was spent and what is left. */
     public static void envelopes(OutputStream out, CycleSummary s) throws IOException {
         Writer w = open(out);
-        row(w, "Cicle", "Codi", "Categoria", "Límit", "Fixos pagats", "Variable", "Fixos pendents", "Queda", "Anual (reserva)");
+        row(w, t("export.csv.envelopes.header").split(";"));
         String cycle = s.cycle().key().toString();
         BigDecimal[] totals = {BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO};
         for (CycleSummary.Envelope e : s.envelopes()) {
@@ -94,7 +93,7 @@ public final class CsvExport {
             row(w, cycle, e.category().code(), e.category().displayName(), amount(v[0]), amount(v[1]), amount(v[2]),
                     amount(v[3]), amount(v[4]), amount(v[5]));
         }
-        row(w, cycle, "", "Total", amount(totals[0]), amount(totals[1]), amount(totals[2]), amount(totals[3]),
+        row(w, cycle, "", t("export.csv.total"), amount(totals[0]), amount(totals[1]), amount(totals[2]), amount(totals[3]),
                 amount(totals[4]), amount(totals[5]));
         w.flush();
     }

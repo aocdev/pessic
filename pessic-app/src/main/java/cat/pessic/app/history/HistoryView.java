@@ -1,5 +1,6 @@
 package cat.pessic.app.history;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.Format;
 import cat.pessic.app.common.SimpleTable;
@@ -51,11 +52,11 @@ public final class HistoryView {
         chart.setBarGap(2);
         chart.setPrefHeight(300);
         XYChart.Series<String, Number> in = new XYChart.Series<>();
-        in.setName("Ingressos");
+        in.setName(t("common.income"));
         XYChart.Series<String, Number> spent = new XYChart.Series<>();
-        spent.setName("Gastat del mes");
+        spent.setName(t("history.chart.spent"));
         XYChart.Series<String, Number> set = new XYChart.Series<>();
-        set.setName("Apartat (reserva, guardioles)");
+        set.setName(t("history.chart.setAside"));
         for (History.Row r : rows) {
             String k = shortMonth(r);
             in.getData().add(new XYChart.Data<>(k, r.income().add(r.extra())));
@@ -69,15 +70,13 @@ public final class HistoryView {
         BigDecimal saved = rows.stream().filter(History.Row::closed).map(History.Row::saved).reduce(BigDecimal.ZERO, BigDecimal::add);
         // the running month shows what came in and what was spent so far, but nothing set aside yet
 
-        Button export = new Button("Exporta (.csv)…");
+        Button export = new Button(t("common.exportCsv"));
         export.setOnAction(e -> ctx.exportHistoryCsv(rows));
-        String title = rows.size() == 1 ? "Aquest mes" : "Els últims " + rows.size() + " mesos";
+        String title = rows.size() == 1 ? t("history.thisMonth") : t("history.lastMonths", rows.size());
         return Ui.card(Ui.sectionHead(title, export), chart,
                 Ui.wrapped(closed == 0
-                        ? "Encara no has tancat cap mes. Els mesos sense tancar es calculen amb els límits d'ara i surten "
-                        + "marcats com a «estimat». Quan acabi un mes, tanca'l des de «Resum»."
-                        : "Mesos tancats: " + closed + ". Hi has estalviat " + Format.eur(saved) + " (sense comptar el que "
-                        + "has apartat a la reserva i a les guardioles). Els mesos sense tancar són una estimació amb els límits d'ara.",
+                        ? t("history.noneClosed")
+                        : t("history.closedSummary", closed, Format.eur(saved)),
                         "small"));
     }
 
@@ -97,11 +96,11 @@ public final class HistoryView {
             chart.setPrefHeight(260);
             chart.setCreateSymbols(true);
             XYChart.Series<String, Number> spent = new XYChart.Series<>();
-            spent.setName("Gastat");
+            spent.setName(t("common.spent"));
             XYChart.Series<String, Number> limit = new XYChart.Series<>();
-            limit.setName("Límit");
+            limit.setName(t("common.limit"));
             XYChart.Series<String, Number> ineLine = new XYChart.Series<>();
-            ineLine.setName("INE");
+            ineLine.setName(t("common.ine"));
             for (History.Row r : rows) {
                 String k = shortMonth(r);
                 CycleClose.CategoryLine l = r.categories().get(selected);
@@ -115,32 +114,30 @@ public final class HistoryView {
         };
         pick.valueProperty().addListener((o, a, b) -> draw.run());
         draw.run();
-        return Ui.card(Ui.sectionHead("Per categoria", pick), holder,
-                Ui.wrapped("Compara el que has gastat cada mes amb el límit que tenies i amb el que gasten les llars com la "
-                        + "teva segons l'INE (" + Format.eur(ine) + " al mes per a " + selected.displayName().toLowerCase() + ").",
+        return Ui.card(Ui.sectionHead(t("history.byCategory.title"), pick), holder,
+                Ui.wrapped(t("history.byCategory.hint", Format.eur(ine), selected.displayName().toLowerCase()),
                         "small"));
     }
 
     private static Node table(AppContext ctx, List<History.Row> rows) {
-        SimpleTable t = new SimpleTable(0, "Mes", ">Ingressos", ">Pressupost", ">Gastat", ">Apartat", ">Estalvi", ">%",
-                ">Dif. banc", "");
+        SimpleTable t = new SimpleTable(0, t("common.month"), ">" + t("common.income"), ">" + t("common.budget"), ">" + t("common.spent"), ">" + t("history.setAside"), ">" + t("common.savings"), ">%",
+                ">" + t("history.bankDifference"), "");
         for (int i = rows.size() - 1; i >= 0; i--) {
             History.Row r = rows.get(i);
             javafx.scene.layout.HBox month = new javafx.scene.layout.HBox(6, SimpleTable.text(Format.month(r.cycle())));
-            if (r.current()) month.getChildren().add(Ui.badge("en curs", "st-n"));
-            else if (!r.closed()) month.getChildren().add(Ui.badge("estimat", "st-warn"));
+            if (r.current()) month.getChildren().add(Ui.badge(t("history.running"), "st-n"));
+            else if (!r.closed()) month.getChildren().add(Ui.badge(t("history.estimated"), "st-warn"));
             Node action = null;
             if (r.closed()) {
-                action = Ui.link("Reobre", () -> {
-                    if (Ui.choose(ctx.window(), "Reobre " + Format.month(r.cycle()).toLowerCase(),
-                            "Es desfaran les aportacions que es van fer en tancar-lo i el sobrant que es va passar al mes "
-                                    + "següent o a una guardiola. Després el podràs tornar a tancar.", -1, "Reobre'l") == 0) {
+                action = Ui.link(t("history.reopen"), () -> {
+                    if (Ui.choose(ctx.window(), t("history.reopenTitle", Format.month(r.cycle()).toLowerCase()),
+                            t("history.reopenHint"), -1, t("history.reopenConfirm")) == 0) {
                         ctx.update(p -> MonthClose.reopen(p, r.cycle()));
                     }
                 });
             } else if (!r.current() && MonthClose.pending(ctx.profile(), ctx.today()).stream().findFirst()
                     .filter(r.cycle()::equals).isPresent()) {
-                action = Ui.link("Tanca'l", () -> MonthCloseDialog.show(ctx, r.cycle()));
+                action = Ui.link(t("history.closeIt"), () -> MonthCloseDialog.show(ctx, r.cycle()));
             }
             BigDecimal saved = r.saved();
             // a month still running has not saved anything yet
@@ -156,10 +153,7 @@ public final class HistoryView {
                             : SimpleTable.money(r.bankDifference(), "muted"),
                     action);
         }
-        return Ui.card(Ui.sectionHead("Mes a mes"), t.node(),
-                Ui.wrapped("«Apartat» és el que va a la reserva, a les guardioles o passa al mes següent. «Estalvi» és el "
-                        + "que queda després. El % és la part dels ingressos que no es va gastar del mes. «Dif. banc» és la diferència entre "
-                        + "el saldo del banc i el que calculava Pessic quan vas tancar el mes: si és negativa, sol ser despesa "
-                        + "sense apuntar.", "small"));
+        return Ui.card(Ui.sectionHead(t("history.title")), t.node(),
+                Ui.wrapped(t("history.hint"), "small"));
     }
 }

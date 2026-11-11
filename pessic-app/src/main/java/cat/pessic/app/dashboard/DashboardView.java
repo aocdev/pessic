@@ -1,5 +1,7 @@
 package cat.pessic.app.dashboard;
 
+import static cat.pessic.core.common.I18n.plural;
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.account.AccountUi;
 import cat.pessic.app.common.Format;
@@ -60,13 +62,11 @@ public final class DashboardView {
         if (pending.isEmpty()) return null;
         YearMonth first = pending.get(0);
         String text = pending.size() == 1
-                ? Format.month(first) + " ha acabat. Tanca'l per guardar-ne el resum, posar diners a la reserva i a les "
-                + "guardioles i decidir què fas amb el que ha sobrat."
-                : "Tens " + pending.size() + " mesos acabats sense tancar, des de " + Format.month(first).toLowerCase()
-                + ". Tanca'ls d'un en un, començant pel més antic.";
-        Button close = Ui.primary("Tanca " + Format.month(first).toLowerCase());
+                ? t("dashboard.close.oneEnded", Format.month(first))
+                : t("dashboard.close.severalEnded", pending.size(), Format.month(first).toLowerCase());
+        Button close = Ui.primary(t("dashboard.close.button", Format.month(first).toLowerCase()));
         close.setOnAction(e -> MonthCloseDialog.show(ctx, first));
-        Button later = Ui.link("Més tard", () -> {
+        Button later = Ui.link(t("dashboard.close.later"), () -> {
             closeBannerHidden = true;
             ctx.update(p -> p);
         });
@@ -88,51 +88,49 @@ public final class DashboardView {
     private static Node dueSoon(AppContext ctx, CycleSummary s) {
         LocalDate today = ctx.today();
         if (!s.cycle().contains(today)) return null;
-        SimpleTable t = new SimpleTable(1, "Quan", "Què", ">Import", "");
+        SimpleTable t = new SimpleTable(1, t("dashboard.upcoming.when"), t("dashboard.upcoming.what"), ">" + t("common.amount"), "");
         for (CycleSummary.PlanLine line : s.plan()) {
             if (line.paid()) continue;
             LocalDate d = line.payment().date();
             if (d.isAfter(today.plusDays(DUE_SOON_DAYS))) continue;
             var f = line.payment().payment();
-            String when = d.isBefore(today) ? "fa " + days(today, d) : d.equals(today) ? "avui" : "d'aquí " + days(d, today);
-            Button paid = new Button("Pagat");
+            String when = d.isBefore(today) ? t("dashboard.upcoming.ago", days(today, d)) : d.equals(today) ? t("dashboard.upcoming.today") : t("dashboard.upcoming.inDays", days(d, today));
+            Button paid = new Button(t("common.paid"));
             paid.getStyleClass().add("small-button");
             paid.setOnAction(e -> ctx.update(p -> PaymentOps.markPaid(p, line.payment(), s.cycle(), today)));
             HBox what = new HBox(6, SimpleTable.text(f.concept()));
-            if (d.isBefore(today)) what.getChildren().add(Ui.badge("vençut?", "st-warn"));
+            if (d.isBefore(today)) what.getChildren().add(Ui.badge(t("common.overdue"), "st-warn"));
             t.add(SimpleTable.text(when + " · " + Format.dayMonth(d), "num"), what, SimpleTable.money(f.amount().negate()), paid);
         }
         for (CycleSummary.AnnualLine line : s.annualDue()) {
             if (line.paid()) continue;
-            Button paid = new Button("Pagat amb la reserva");
+            Button paid = new Button(t("common.paidFromReserve"));
             paid.getStyleClass().add("small-button");
             paid.setOnAction(e -> ctx.update(p -> PaymentOps.markAnnualPaid(p, line, s.cycle(), today)));
-            t.add(SimpleTable.text("aquest mes", "num"), new HBox(6, SimpleTable.text(line.item().concept()),
-                    Ui.badge("anual", "st-n")), SimpleTable.money(line.item().amount().negate()), paid);
+            t.add(SimpleTable.text(t("dashboard.upcoming.thisMonth"), "num"), new HBox(6, SimpleTable.text(line.item().concept()),
+                    Ui.badge(t("common.annual"), "st-n")), SimpleTable.money(line.item().amount().negate()), paid);
         }
         var pay = s.expectedPaycheck();
         if (pay != null && !pay.received()) {
-            Button got = new Button("Rebuda");
+            Button got = new Button(t("common.received"));
             got.getStyleClass().add("small-button");
             got.setOnAction(e -> IncomeDialog.paycheck(ctx, pay));
-            t.addStyled("row-income", SimpleTable.text("aquest mes", "num"),
-                    SimpleTable.text("Paga extra de " + Format.monthName(pay.month().getMonthValue()).toLowerCase()),
+            t.addStyled("row-income", SimpleTable.text(t("dashboard.upcoming.thisMonth"), "num"),
+                    SimpleTable.text(t("dashboard.upcoming.extraPaycheck", Format.monthName(pay.month().getMonthValue()).toLowerCase())),
                     SimpleTable.money(pay.amount(), "inc"), got);
         }
         var shortfall = Pots.reserveShortfall(ctx.profile(), today);
         if (t.isEmpty() && shortfall.isEmpty()) return null;
         List<Node> body = new ArrayList<>();
-        body.add(Ui.sectionHead("Propers pagaments"));
+        body.add(Ui.sectionHead(t("dashboard.upcoming.title")));
         if (!t.isEmpty()) body.add(t.node());
-        shortfall.ifPresent(sf -> body.add(Ui.wrapped("Al " + Format.month(sf.cycle()).toLowerCase() + " toca pagar "
-                + Format.eur(sf.due()) + " d'anuals i a la reserva hi faltaran " + Format.eur(sf.missing())
-                + ". Mira-ho a «Estalvi».", "text-bad")));
+        shortfall.ifPresent(sf -> body.add(Ui.wrapped(t("dashboard.upcoming.reserveShortfall", Format.month(sf.cycle()).toLowerCase(), Format.eur(sf.due()), Format.eur(sf.missing())), "text-bad")));
         return Ui.card(body.toArray(Node[]::new));
     }
 
     private static String days(LocalDate later, LocalDate earlier) {
         long n = java.time.temporal.ChronoUnit.DAYS.between(earlier, later);
-        return n == 1 ? "1 dia" : n + " dies";
+        return plural("dashboard.days", n);
     }
 
     private static Node kpis(AppContext ctx, CycleSummary s) {
@@ -140,17 +138,15 @@ public final class DashboardView {
         double rate = s.income().signum() == 0 ? 0 : s.projectedSavings().doubleValue() / s.income().doubleValue();
         int pct = s.budget().signum() == 0 ? 0 : (int) Math.round(s.spent().doubleValue() / s.budget().doubleValue() * 100);
         HBox row = new HBox(12,
-                tile("Ingressos", Format.eur(s.income()), "el dia " + cfg.payday() + " de cada mes"
-                        + (s.newMoney().signum() > 0 ? " · + " + Format.eur(s.newMoney()) + " extra aquest mes" : "")),
-                tile("Pressupost", Format.eur(s.budget()),
-                        (s.extraThisCycle().signum() > 0 ? "inclou " + Format.eur(s.extraThisCycle()) + " puntuals · " : "")
+                tile(t("common.income"), Format.eur(s.income()), t("dashboard.kpi.paydayEachMonth", cfg.payday(), (s.newMoney().signum() > 0 ? t("dashboard.kpi.extraThisMonth", Format.eur(s.newMoney())) : ""))),
+                tile(t("common.budget"), Format.eur(s.budget()),
+                        (s.extraThisCycle().signum() > 0 ? t("dashboard.kpi.includesOneOff", Format.eur(s.extraThisCycle())) : "")
                                 + budgetExtras(s)
-                                + (s.monthlyReserve().signum() > 0 ? "+ " + Format.eur(s.monthlyReserve()) + " a la reserva" : "sense reserva d'anuals")
-                                + (s.goalsMonthly().signum() > 0 ? " · " + Format.eur(s.goalsMonthly()) + " a guardioles" : "")),
-                tile("Estalvi previst", Format.eur(s.projectedSavings()),
-                        String.format(Format.CA, "%.1f %% dels ingressos", rate * 100)),
-                tile("Gastat fins ara", Format.eur(s.spent()), pct + " % del pressupost"
-                        + (s.refunds().signum() > 0 ? " · descomptades " + Format.eur(s.refunds()) + " de devolucions" : "")));
+                                + (s.monthlyReserve().signum() > 0 ? t("dashboard.kpi.toReserve", Format.eur(s.monthlyReserve())) : t("dashboard.kpi.noReserve"))
+                                + (s.goalsMonthly().signum() > 0 ? t("dashboard.kpi.toGoals", Format.eur(s.goalsMonthly())) : "")),
+                tile(t("dashboard.kpi.projectedSavings"), Format.eur(s.projectedSavings()),
+                        t("dashboard.ofIncome", String.format(Format.CA, "%.1f", rate * 100))),
+                tile(t("dashboard.kpi.spentSoFar"), Format.eur(s.spent()), t("dashboard.kpi.percentOfBudget", pct, (s.refunds().signum() > 0 ? t("dashboard.kpi.refundsDeducted", Format.eur(s.refunds())) : ""))));
         if (s.projectedSavings().signum() < 0) ((VBox) row.getChildren().get(2)).getStyleClass().add("tile-bad");
         return row;
     }
@@ -161,8 +157,8 @@ public final class DashboardView {
                 .filter(i -> i.destination() == Income.Destination.BUDGET)
                 .map(Income::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal other = s.extraBudget().subtract(carry);
-        return (carry.signum() > 0 ? "+ " + Format.eur(carry) + " sobrant del mes anterior · " : "")
-                + (other.signum() > 0 ? "+ " + Format.eur(other) + " d'ingressos extra · " : "");
+        return (carry.signum() > 0 ? t("dashboard.kpi.carriedOver", Format.eur(carry)) : "")
+                + (other.signum() > 0 ? t("dashboard.kpi.extraIncome", Format.eur(other)) : "");
     }
 
     private static Node tile(String label, String value, String sub) {
@@ -177,17 +173,16 @@ public final class DashboardView {
 
     private static Node hero(CycleSummary s) {
         Label status = switch (s.status()) {
-            case OVER_BUDGET -> Ui.badge("Pressupost superat", "st-bad");
-            case AHEAD_OF_PACE -> Ui.badge("Vas per sobre del ritme", "st-warn");
-            case ON_TRACK -> Ui.badge("Dins del ritme", "st-ok");
+            case OVER_BUDGET -> Ui.badge(t("dashboard.status.overBudget"), "st-bad");
+            case AHEAD_OF_PACE -> Ui.badge(t("dashboard.status.aheadOfPace"), "st-warn");
+            case ON_TRACK -> Ui.badge(t("dashboard.status.onTrack"), "st-ok");
         };
-        VBox left = new VBox(6, Ui.label("Et queda per a la despesa del dia a dia", "muted"),
+        VBox left = new VBox(6, Ui.label(t("dashboard.left.title"), "muted"),
                 Ui.label(Format.eur(s.left()), "hero"),
-                Ui.label("Pressupost " + Format.eur(s.budget()) + " − gastat " + Format.eur(s.spent())
-                        + " − fixos pendents " + Format.eur(s.pendingFixed()), "small"));
-        VBox right = new VBox(6, Ui.label("Límit per dia", "muted"),
+                Ui.label(t("dashboard.left.formula", Format.eur(s.budget()), Format.eur(s.spent()), Format.eur(s.pendingFixed())), "small"));
+        VBox right = new VBox(6, Ui.label(t("dashboard.left.perDay"), "muted"),
                 Ui.label(s.perDay() == null ? "—" : Format.eur(s.perDay()), "hero-secondary"),
-                new HBox(8, status, Ui.label(s.daysLeft() > 0 ? s.daysLeft() + " dies" : "mes tancat", "small")));
+                new HBox(8, status, Ui.label(s.daysLeft() > 0 ? plural("dashboard.days", s.daysLeft()) : t("dashboard.left.monthClosed"), "small")));
         right.setAlignment(Pos.TOP_RIGHT);
         ((HBox) right.getChildren().get(2)).setAlignment(Pos.CENTER_RIGHT);
         Region spacer = new Region();
@@ -227,13 +222,13 @@ public final class DashboardView {
                     e.limit().doubleValue(), ineMonthly.doubleValue(), e.over());
             BigDecimal used = e.fixedPaid().add(e.variableSpent());
             boolean noLimit = e.limit().signum() == 0 && used.signum() == 0 && e.fixedPending().signum() == 0;
-            Label amt = noLimit ? Ui.label("sense límit", "muted")
+            Label amt = noLimit ? Ui.label(t("dashboard.envelopes.noLimit"), "muted")
                     : Ui.label(Format.eur(used) + " / " + Format.eur(e.limit()), "num");
             Label restLabel = noLimit ? Ui.label("", "muted")
                     : e.over() ? Ui.badge(Format.eur(e.remaining()), "st-bad")
-                    : BudgetCalculator.isLow(e) ? Ui.badge("queden " + Format.eur(e.remaining()), "st-warn")
-                    : Ui.label("queden " + Format.eur(e.remaining()), "muted");
-            VBox restBox = new VBox(2, restLabel, Ui.label("INE " + Format.eur(ineMonthly), "small"));
+                    : BudgetCalculator.isLow(e) ? Ui.badge(t("dashboard.envelopes.left", Format.eur(e.remaining())), "st-warn")
+                    : Ui.label(t("dashboard.envelopes.left", Format.eur(e.remaining())), "muted");
+            VBox restBox = new VBox(2, restLabel, Ui.label(t("dashboard.envelopes.ine", Format.eur(ineMonthly)), "small"));
             if (e.isEmpty()) {
                 title.getStyleClass().add("env-empty");
                 amt.getStyleClass().add("env-empty");
@@ -241,13 +236,11 @@ public final class DashboardView {
             grid.addRow(row++, title, b, amt, restBox);
         }
         List<Node> body = new ArrayList<>();
-        javafx.scene.control.Button export = new javafx.scene.control.Button("Exporta (.csv)…");
+        javafx.scene.control.Button export = new javafx.scene.control.Button(t("common.exportCsv"));
         export.setOnAction(ev -> ctx.exportEnvelopesCsv());
-        body.add(Ui.sectionHead("Sobres per categoria", legend(), export));
+        body.add(Ui.sectionHead(t("dashboard.envelopes.title"), legend(), export));
         body.add(grid);
-        body.add(Ui.wrapped("Les 13 categories de l'INE (COICOP 2018). La línia vertical marca el que gasten al mes les llars "
-                + "com la teva segons l'INE (EPF " + IneReference.bundled().year() + "); els límits es canvien a «Límits». "
-                + "Passa el ratolí per sobre d'una categoria per veure què hi va.", "small"));
+        body.add(Ui.wrapped(t("dashboard.envelopes.hint", IneReference.bundled().year()), "small"));
         return Ui.card(body.toArray(Node[]::new));
     }
 
@@ -260,13 +253,12 @@ public final class DashboardView {
                 .sorted(java.util.Comparator.comparingInt(AnnualItem::month)).toList();
         if (mine.isEmpty()) return null;
         String what = mine.size() == 1
-                ? "Anual: " + mine.get(0).concept() + ", " + Format.eur(mine.get(0).amount()) + " al "
-                        + Format.monthName(mine.get(0).month()).toLowerCase()
-                : "Anuals: " + mine.size() + " pagaments, " + Format.eur(e.annualYearly()) + " l'any";
-        String reserve = " · " + Format.eur(e.annualMonthly()) + "/mes a la reserva";
+                ? t("dashboard.envelopes.annualOne", mine.get(0).concept(), Format.eur(mine.get(0).amount()), Format.monthName(mine.get(0).month()).toLowerCase())
+                : t("dashboard.envelopes.annualMany", mine.size(), Format.eur(e.annualYearly()));
+        String reserve = t("dashboard.envelopes.perMonthToReserve", Format.eur(e.annualMonthly()));
         String due = e.annualDue().signum() == 0 ? ""
-                : e.annualPaid().compareTo(e.annualDue()) >= 0 ? ". Aquest mes: pagat de la reserva"
-                : ". Aquest mes toca pagar-lo de la reserva";
+                : e.annualPaid().compareTo(e.annualDue()) >= 0 ? t("dashboard.envelopes.paidFromReserveThisMonth")
+                : t("dashboard.envelopes.dueFromReserveThisMonth");
         return what + reserve + due;
     }
 
@@ -274,15 +266,15 @@ public final class DashboardView {
     private record ExtraNote(String text) {
         ExtraNote(CycleSummary.Envelope e) {
             this(e.limit().compareTo(e.baseLimit()) > 0
-                    ? "Límit " + Format.eur(e.baseLimit()) + " + " + Format.eur(e.limit().subtract(e.baseLimit())) + " puntual aquest mes"
+                    ? t("dashboard.envelopes.limitWithOneOff", Format.eur(e.baseLimit()), Format.eur(e.limit().subtract(e.baseLimit())))
                     : null);
         }
     }
 
     private static Node legend() {
-        return new HBox(14, legendItem("seg-fixed", "Fix pagat"), legendItem("seg-var", "Variable"),
-                legendItem("seg-pending", "Fix pendent"), legendItem("seg-annual", "Anual (reserva)"),
-                legendItem("ine-swatch", "INE"));
+        return new HBox(14, legendItem("seg-fixed", t("dashboard.envelopes.fixedPaid")), legendItem("seg-var", t("dashboard.envelopes.variable")),
+                legendItem("seg-pending", t("dashboard.envelopes.fixedPending")), legendItem("seg-annual", t("dashboard.envelopes.annualReserve")),
+                legendItem("ine-swatch", t("common.ine")));
     }
 
     private static Node legendItem(String style, String text) {
@@ -297,14 +289,14 @@ public final class DashboardView {
         HBox row = new HBox(10);
         for (CycleSummary.Week w : s.weeks()) {
             Label st = switch (w.state()) {
-                case PENDING -> Ui.badge("pendent", "st-n");
-                case OVER -> Ui.badge("passat " + Format.eur(w.remaining().negate()), "st-bad");
-                case WARNING -> Ui.badge("queden " + Format.eur(w.remaining()), "st-warn");
-                case OK -> Ui.badge("queden " + Format.eur(w.remaining()), "st-ok");
+                case PENDING -> Ui.badge(t("dashboard.weeks.pending"), "st-n");
+                case OVER -> Ui.badge(t("dashboard.weeks.over", Format.eur(w.remaining().negate())), "st-bad");
+                case WARNING -> Ui.badge(t("dashboard.envelopes.left", Format.eur(w.remaining())), "st-warn");
+                case OK -> Ui.badge(t("dashboard.envelopes.left", Format.eur(w.remaining())), "st-ok");
             };
             VBox card = new VBox(4,
-                    Ui.label("Setmana " + w.number() + " · " + Format.dayMonth(w.start()) + "–" + Format.dayMonth(w.end()), "small"),
-                    Ui.label(Format.eur(w.spent()) + " de " + Format.eur(w.limit()), "num"), st);
+                    Ui.label(t("dashboard.weeks.week", w.number(), Format.dayMonth(w.start()), Format.dayMonth(w.end())), "small"),
+                    Ui.label(t("dashboard.weeks.spentOfLimit", Format.eur(w.spent()), Format.eur(w.limit())), "num"), st);
             card.getStyleClass().add("week");
             if (w.current()) card.getStyleClass().add("now");
             HBox.setHgrow(card, Priority.ALWAYS);
@@ -314,8 +306,8 @@ public final class DashboardView {
         int days = s.cycle().days();
         String perWeek = Format.eur(s.variableBudget().multiply(java.math.BigDecimal.valueOf(7))
                 .divide(java.math.BigDecimal.valueOf(days), 2, java.math.RoundingMode.HALF_UP));
-        return Ui.card(Ui.sectionHead("Límit setmanal",
-                Ui.label("Despesa variable: " + Format.eur(s.variableBudget()) + " al mes, " + perWeek + " per setmana", "small")), row);
+        return Ui.card(Ui.sectionHead(t("dashboard.weeks.title"),
+                Ui.label(t("dashboard.weeks.hint", Format.eur(s.variableBudget()), perWeek), "small")), row);
     }
 
     private static Node rules(AppContext ctx, CycleSummary s) {
@@ -325,20 +317,20 @@ public final class DashboardView {
         List<String> r = new ArrayList<>();
         if (hasSav || hasRes) {
             List<String> t = new ArrayList<>();
-            if (hasSav) t.add("una transferència automàtica de " + Format.eur(cfg.savings()) + " a estalvi");
-            if (hasRes) t.add("una de " + Format.eur(s.monthlyReserve()) + " a la reserva d'anuals");
-            r.add("El dia " + cfg.payday() + ", quan cobres, fes " + String.join(" i ", t) + ". El que queda al compte és el teu mes.");
+            if (hasSav) t.add(t("dashboard.rules.transferToSavings", Format.eur(cfg.savings())));
+            if (hasRes) t.add(t("dashboard.rules.transferToReserve", Format.eur(s.monthlyReserve())));
+            r.add(t("dashboard.rules.paydayWithTransfers", cfg.payday(), String.join(" " + t("common.and") + " ", t)));
         } else {
-            r.add("El dia " + cfg.payday() + ", quan cobres, el que entra és el teu mes. Si pots, programa una transferència automàtica a estalvi aquell mateix dia.");
+            r.add(t("dashboard.rules.paydayPlain", cfg.payday()));
         }
         String perWeek = Format.eur(s.variableBudget().multiply(java.math.BigDecimal.valueOf(7))
                 .divide(java.math.BigDecimal.valueOf(s.cycle().days()), 2, java.math.RoundingMode.HALF_UP));
-        r.add("Cada setmana té el seu límit (" + perWeek + "). El que no gastes passa a la setmana següent; el que et passes, es resta de les que queden.");
-        r.add("Un sobre en vermell es tanca fins al mes següent. Si de veritat cal gastar-hi més, abaixa el límit d'un altre sobre en la mateixa quantitat.");
-        if (hasRes) r.add("Els pagaments anuals surten de la reserva, mai dels diners del mes. Marca'ls a «Pagaments fixos» quan es cobrin.");
-        r.add("Quan acabi el mes, tanca'l: es guarda el resum a «Històric» i decideixes on va el que ha sobrat.");
+        r.add(t("dashboard.rules.weekly", perWeek));
+        r.add(t("dashboard.rules.redEnvelope"));
+        if (hasRes) r.add(t("dashboard.rules.annuals"));
+        r.add(t("dashboard.rules.closeMonth"));
         VBox list = new VBox(6);
         for (int i = 0; i < r.size(); i++) list.getChildren().add(Ui.wrapped((i + 1) + ". " + r.get(i)));
-        return Ui.card(Ui.sectionHead("Les regles del mes"), list);
+        return Ui.card(Ui.sectionHead(t("dashboard.rules.title")), list);
     }
 }

@@ -1,5 +1,6 @@
 package cat.pessic.app.common;
 
+import static cat.pessic.core.common.I18n.t;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javafx.event.ActionEvent;
@@ -30,7 +31,7 @@ public final class EditDialog<T> {
 
     public static <T> Optional<Result<T>> show(Window owner, String title, Region form, boolean canDelete,
                                         String deleteText, Supplier<Check<T>> validator) {
-        return show(owner, title, form, canDelete, deleteText, "Desa", validator);
+        return show(owner, title, form, canDelete, deleteText, t("common.save"), validator);
     }
 
     /** @param saveText label of the confirm button ("Desa" by default) */
@@ -41,7 +42,7 @@ public final class EditDialog<T> {
         d.setTitle(title);
         d.setHeaderText(null);
         ButtonType save = new ButtonType(saveText, ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancel = new ButtonType("Cancel·la", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType cancel = new ButtonType(t("common.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         ButtonType delete = new ButtonType(deleteText, ButtonBar.ButtonData.LEFT);
         d.getDialogPane().getButtonTypes().addAll(save, cancel);
         if (canDelete) d.getDialogPane().getButtonTypes().add(delete);

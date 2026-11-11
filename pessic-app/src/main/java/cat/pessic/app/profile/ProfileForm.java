@@ -1,5 +1,6 @@
 package cat.pessic.app.profile;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.common.Ui;
 import cat.pessic.app.income.PaychecksFields;
 import cat.pessic.core.account.AccountOps;
@@ -51,8 +52,7 @@ public final class ProfileForm {
         this.today = today;
     }
     private final CheckBox useIne = new CheckBox(
-            "Proposa'm límits segons el que gasten les llars com la meva segons l'INE (tipus, membres i ingressos). "
-                    + "Després els pots canviar.");
+            t("profile.form.useIneLimits"));
     private final Label nameError = error();
     private final Label incomeError = error();
 
@@ -71,11 +71,9 @@ public final class ProfileForm {
         if (firstRun) {
             Label eyebrow = new Label("PESSIC");
             eyebrow.getStyleClass().add("eyebrow");
-            Label title = new Label("Controla el que gastes cada mes");
+            Label title = new Label(t("profile.form.tagline"));
             title.getStyleClass().add("h1");
-            Label intro = new Label("Defineix un límit per a cada categoria de despesa, els pagaments fixos del mes "
-                    + "i quant vols estalviar. Després apuntes el que gastes, pessic a pessic, i l'aplicació et diu "
-                    + "quant et queda per setmana i per dia. Les dades es guarden només en aquest ordinador.");
+            Label intro = new Label(t("profile.form.intro"));
             intro.setWrapText(true);
             intro.getStyleClass().add("muted");
             VBox head = new VBox(6, eyebrow, title, intro);
@@ -84,7 +82,7 @@ public final class ProfileForm {
 
         page.getChildren().add(card(firstRun, onCreate, onCancel));
 
-        Hyperlink importLink = new Hyperlink("Ja tens una còpia de l'aplicació web? Importa-la (.json)");
+        Hyperlink importLink = new Hyperlink(t("profile.form.importWebApp"));
         importLink.setOnAction(e -> onImport.run());
         page.getChildren().add(importLink);
 
@@ -98,10 +96,10 @@ public final class ProfileForm {
     }
 
     private VBox card(boolean firstRun, Consumer<Profile> onCreate, Runnable onCancel) {
-        Label h = new Label(firstRun ? "Crea el teu perfil" : "Perfil nou");
+        Label h = new Label(firstRun ? t("profile.form.firstTitle") : t("profile.form.newTitle"));
         h.getStyleClass().add("h2");
 
-        name.setPromptText("Per exemple, Marta i Joan");
+        name.setPromptText(t("profile.form.namePrompt"));
         income.setPromptText("2.400,00");
         payday.setEditable(true);
         payday.setPrefWidth(110);
@@ -123,23 +121,21 @@ public final class ProfileForm {
         c2.setPercentWidth(40);
         grid.getColumnConstraints().addAll(c1, c2);
 
-        grid.add(field("Nom", name), 0, 0, 2, 1);
+        grid.add(field(t("common.name"), name), 0, 0, 2, 1);
         grid.add(nameError, 0, 1, 2, 1);
-        grid.add(field("Ingressos nets al mes (€)", income), 0, 2);
-        grid.add(field("Dia que cobres", payday), 1, 2);
+        grid.add(field(t("common.netMonthlyIncome"), income), 0, 2);
+        grid.add(field(t("common.payday"), payday), 1, 2);
         grid.add(incomeError, 0, 3, 2, 1);
-        grid.add(field("Tipus de llar", household), 0, 4);
-        grid.add(field("Membres de la llar", members), 1, 4);
-        javafx.scene.layout.Region pay = paychecks.node("Si cobres 14 pagues, Pessic t'avisarà els mesos de la paga extra. "
-                + "Ho pots canviar a «Configuració» si canvies de feina.");
+        grid.add(field(t("common.householdType"), household), 0, 4);
+        grid.add(field(t("common.householdMembers"), members), 1, 4);
+        javafx.scene.layout.Region pay = paychecks.node(t("profile.form.paychecksHint"));
         GridPane.setMargin(pay, new Insets(12, 0, 0, 0));
         grid.add(pay, 0, 5, 2, 1);
         grid.add(paychecksError, 0, 6, 2, 1);
-        balance.setPromptText("opcional, per exemple 512,40");
+        balance.setPromptText(t("profile.form.balancePrompt"));
         balance.textProperty().addListener((o, a, b) -> show(balanceError, null));
-        VBox balanceField = field("Saldo avui al compte on cobres (€)", balance);
-        Label balanceHelp = new Label("Amb el saldo, Pessic et dirà quant et quedarà al compte abans de tornar a cobrar. "
-                + "El pots donar més tard des de «Resum».");
+        VBox balanceField = field(t("profile.form.balance"), balance);
+        Label balanceHelp = new Label(t("profile.form.balanceHint"));
         balanceHelp.getStyleClass().add("small");
         balanceHelp.setWrapText(true);
         grid.add(balanceField, 0, 7);
@@ -148,20 +144,20 @@ public final class ProfileForm {
         GridPane.setMargin(useIne, new Insets(12, 0, 0, 0));
         grid.add(useIne, 0, 10, 2, 1);
 
-        Label paydayHelp = new Label("El mes del pressupost va del dia que cobres fins al dia abans del següent cobrament.");
+        Label paydayHelp = new Label(t("profile.form.cycleHint"));
         paydayHelp.getStyleClass().add("small");
         paydayHelp.setWrapText(true);
         GridPane.setMargin(paydayHelp, new Insets(8, 0, 0, 0));
         grid.add(paydayHelp, 0, 11, 2, 1);
 
-        Button start = new Button(firstRun ? "Comença" : "Crea el perfil");
+        Button start = new Button(firstRun ? t("profile.form.start") : t("profile.form.create"));
         start.getStyleClass().add("primary");
         start.setDefaultButton(true);
         start.setOnAction(e -> submit().ifPresent(onCreate));
         HBox buttons = new HBox(8, start);
         buttons.setAlignment(Pos.CENTER_RIGHT);
         if (!firstRun) {
-            Button cancel = new Button("Cancel·la");
+            Button cancel = new Button(t("common.cancel"));
             cancel.setCancelButton(true);
             cancel.setOnAction(e -> onCancel.run());
             buttons.getChildren().add(0, cancel);
@@ -177,14 +173,14 @@ public final class ProfileForm {
         boolean ok = true;
         String n = name.getText() == null ? "" : name.getText().strip();
         if (n.isEmpty()) {
-            show(nameError, "Escriu un nom per al perfil.");
+            show(nameError, t("profile.form.errorName"));
             ok = false;
         } else {
             show(nameError, null);
         }
         Optional<BigDecimal> inc = AmountParser.parse(income.getText()).filter(v -> v.signum() >= 0);
         if (inc.isEmpty()) {
-            show(incomeError, "Escriu els ingressos com a import, per exemple 2.400,00.");
+            show(incomeError, t("profile.form.errorIncome"));
             ok = false;
         } else {
             show(incomeError, null);
@@ -195,7 +191,7 @@ public final class ProfileForm {
         Optional<BigDecimal> bal = balance.getText() == null || balance.getText().isBlank() ? Optional.empty()
                 : AmountParser.parse(balance.getText());
         boolean badBalance = balance.getText() != null && !balance.getText().isBlank() && bal.isEmpty();
-        show(balanceError, badBalance ? "El saldo no s'entén. Escriu-lo com 512,40, o deixa-ho en blanc." : null);
+        show(balanceError, badBalance ? t("profile.form.errorBalance") : null);
         if (badBalance) ok = false;
         if (!ok) {
             (n.isEmpty() ? name : inc.isEmpty() ? income : badBalance ? balance : paychecks.amount).requestFocus();

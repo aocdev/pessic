@@ -1,5 +1,7 @@
 package cat.pessic.app;
 
+import static cat.pessic.core.common.I18n.plural;
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.budget.LimitsView;
 import cat.pessic.app.common.Format;
 import cat.pessic.app.common.Ui;
@@ -61,14 +63,14 @@ import javafx.stage.Window;
 public class PessicApp extends Application implements AppContext {
 
     private enum Section {
-        SUMMARY("Resum", DashboardView::build),
-        MOVEMENTS("Moviments", MovementsView::build),
-        PLAN("Pagaments fixos", PlanView::build),
-        ANNUALS("Anuals", AnnualsView::build),
-        SAVINGS("Estalvi", SavingsView::build),
-        LIMITS("Límits", LimitsView::build),
-        HISTORY("Històric", HistoryView::build),
-        SETTINGS("Configuració", SettingsView::build);
+        SUMMARY(t("app.nav.summary"), DashboardView::build),
+        MOVEMENTS(t("common.movements"), MovementsView::build),
+        PLAN(t("app.nav.fixedPayments"), PlanView::build),
+        ANNUALS(t("app.nav.annuals"), AnnualsView::build),
+        SAVINGS(t("common.savings"), SavingsView::build),
+        LIMITS(t("app.nav.limits"), LimitsView::build),
+        HISTORY(t("app.nav.history"), HistoryView::build),
+        SETTINGS(t("app.nav.settings"), SettingsView::build);
 
         final String title;
         final Function<AppContext, Region> view;
@@ -118,8 +120,7 @@ public class PessicApp extends Application implements AppContext {
         loadActiveProfile();
         stage.show();
         db.lastBackup().ifPresent(b -> Platform.runLater(() -> Ui.info(stage,
-                "Pessic s'ha actualitzat: les categories ara segueixen la classificació oficial de l'INE (COICOP 2018). "
-                        + "Abans d'actualitzar les dades se n'ha fet una còpia a:\n" + b)));
+                t("app.upgradedToCoicop", b))));
     }
 
     @Override
@@ -174,7 +175,7 @@ public class PessicApp extends Application implements AppContext {
             section = Section.SUMMARY;
             loadActiveProfile();
         } catch (RuntimeException ex) {
-            Ui.error(stage, "No s'ha pogut desar el perfil: " + ex.getMessage());
+            Ui.error(stage, t("app.errorSavingProfile", ex.getMessage()));
         }
     }
 
@@ -210,9 +211,9 @@ public class PessicApp extends Application implements AppContext {
             render();
             return true;
         } catch (IllegalArgumentException ex) {
-            Ui.error(stage, "No s'ha pogut desar: " + ex.getMessage());
+            Ui.error(stage, t("app.errorSaving", ex.getMessage()));
         } catch (DataAccessException ex) {
-            Ui.error(stage, "Error de la base de dades: " + ex.getMessage());
+            Ui.error(stage, t("app.errorDatabase", ex.getMessage()));
         }
         return false;
     }
@@ -226,39 +227,38 @@ public class PessicApp extends Application implements AppContext {
     @Override
     public void importBackup() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Importa una còpia de l'aplicació web");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Còpia del pressupost (*.json)", "*.json"));
+        fc.setTitle(t("app.importWebAppBackup"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(t("app.webAppBackupFilter"), "*.json"));
         File f = fc.showOpenDialog(stage);
         if (f == null) return;
         try (InputStream in = Files.newInputStream(f.toPath())) {
             var backup = new BackupImporter().importInto(in, repo);
             section = Section.SUMMARY;
             loadActiveProfile();
-            Ui.info(stage, "S'han importat " + backup.profiles().size() + " perfils.");
+            Ui.info(stage, t("app.importedProfiles", backup.profiles().size()));
             offerToRemoveEmptyProfiles(backup);
         } catch (Exception ex) {
-            Ui.error(stage, "No s'ha pogut importar la còpia: " + ex.getMessage());
+            Ui.error(stage, t("app.errorImporting", ex.getMessage()));
         }
     }
 
     @Override
     public void exportJson() {
-        File f = chooseSaveFile("Exporta una còpia", "pessic-copia-" + today() + ".json",
-                "Còpia de Pessic (*.json)", "*.json");
+        File f = chooseSaveFile(t("app.exportBackup"), "pessic-copia-" + today() + ".json",
+                t("app.backupFilter"), "*.json");
         if (f == null) return;
         String active = profile.id();
         List<Profile> all = new ArrayList<>();
         repo.list().forEach(r -> repo.find(r.id()).ifPresent(all::add));
         if (writeFile(f, out -> new BackupExporter().write(out, all, active))) {
-            Ui.info(stage, "S'ha desat la còpia (" + all.size() + (all.size() == 1 ? " perfil" : " perfils") + ") a:\n" + f
-                    + "\n\nLa pots tornar a carregar amb «Importa una còpia».");
+            Ui.info(stage, t("app.backupSaved", plural("app.profileCount", all.size()), f));
         }
     }
 
     @Override
     public void exportMovementsCsv(boolean onlyCurrentCycle) {
         String name = "pessic-moviments-" + (onlyCurrentCycle ? cycle.toString() : "tots-" + today()) + ".csv";
-        File f = chooseSaveFile("Exporta els moviments", name, "Full de càlcul CSV (*.csv)", "*.csv");
+        File f = chooseSaveFile(t("app.exportMovements"), name, t("app.csvFilter"), "*.csv");
         if (f == null) return;
         var moves = onlyCurrentCycle
                 ? profile.movements().stream().filter(m -> summary.cycle().contains(m.date())).toList()
@@ -267,26 +267,26 @@ public class PessicApp extends Application implements AppContext {
                 ? profile.incomes().stream().filter(i -> summary.cycle().contains(i.date())).toList()
                 : profile.incomes();
         if (writeFile(f, out -> CsvExport.movements(out, moves, incomes, profile.ledger().pots(), profile.config().payday()))) {
-            Ui.info(stage, "S'han exportat " + (moves.size() + incomes.size()) + " moviments a:\n" + f);
+            Ui.info(stage, t("app.movementsExported", (moves.size() + incomes.size()), f));
         }
     }
 
     @Override
     public void exportEnvelopesCsv() {
-        File f = chooseSaveFile("Exporta el resum per categoria", "pessic-sobres-" + cycle + ".csv",
-                "Full de càlcul CSV (*.csv)", "*.csv");
+        File f = chooseSaveFile(t("app.exportEnvelopes"), "pessic-sobres-" + cycle + ".csv",
+                t("app.csvFilter"), "*.csv");
         if (f == null) return;
         if (writeFile(f, out -> CsvExport.envelopes(out, summary))) {
-            Ui.info(stage, "S'ha exportat el resum de " + Format.month(cycle) + " a:\n" + f);
+            Ui.info(stage, t("app.envelopesExported", Format.month(cycle), f));
         }
     }
 
     @Override
     public void exportHistoryCsv(List<History.Row> rows) {
-        File f = chooseSaveFile("Exporta l'històric", "pessic-historic-" + today() + ".csv",
-                "Full de càlcul CSV (*.csv)", "*.csv");
+        File f = chooseSaveFile(t("app.exportHistory"), "pessic-historic-" + today() + ".csv",
+                t("app.csvFilter"), "*.csv");
         if (f == null) return;
-        if (writeFile(f, out -> CsvExport.history(out, rows))) Ui.info(stage, "S'ha exportat l'històric a:\n" + f);
+        if (writeFile(f, out -> CsvExport.history(out, rows))) Ui.info(stage, t("app.historyExported", f));
     }
 
     private interface FileWriterAction { void write(OutputStream out) throws Exception; }
@@ -316,7 +316,7 @@ public class PessicApp extends Application implements AppContext {
             Files.move(tmp, dest, StandardCopyOption.REPLACE_EXISTING);
             return true;
         } catch (Exception ex) {
-            Ui.error(stage, "No s'ha pogut desar el fitxer: " + ex.getMessage());
+            Ui.error(stage, t("app.errorSavingFile", ex.getMessage()));
             return false;
         } finally {
             if (tmp != null) {
@@ -331,9 +331,8 @@ public class PessicApp extends Application implements AppContext {
         var leftovers = repo.list().stream().filter(r -> r.empty() && !imported.contains(r.id())).toList();
         if (leftovers.isEmpty()) return;
         String names = String.join(", ", leftovers.stream().map(r -> "«" + r.name() + "»").toList());
-        if (Ui.choose(stage, "Perfils buits", "També tens " + (leftovers.size() == 1 ? "un perfil buit" : "perfils buits")
-                + " que no formen part de la còpia: " + names + ". No tenen cap moviment ni pagament. Vols esborrar-los?",
-                -1, "Esborra'ls", "Deixa'ls") == 0) {
+        if (Ui.choose(stage, t("app.emptyProfilesTitle"), t("app.emptyProfilesQuestion", plural("app.emptyProfiles", leftovers.size()), names),
+                -1, t("app.deleteThem"), t("app.keepThem")) == 0) {
             leftovers.forEach(r -> repo.delete(r.id()));
             loadActiveProfile();
         }
@@ -347,9 +346,9 @@ public class PessicApp extends Application implements AppContext {
         try {
             Path f = backups.now(db, java.time.LocalDateTime.now());
             render();
-            Ui.info(stage, "S'ha fet una còpia a:\n" + f);
+            Ui.info(stage, t("app.backupMade", f));
         } catch (RuntimeException ex) {
-            Ui.error(stage, "No s'ha pogut fer la còpia: " + ex.getMessage());
+            Ui.error(stage, t("app.errorBackup", ex.getMessage()));
         }
     }
 
@@ -365,14 +364,13 @@ public class PessicApp extends Application implements AppContext {
                 db = Database.open(AppPaths.database());
             }
             repo = new ProfileRepository(db);
-            Ui.error(stage, "No s'ha pogut restaurar la còpia: " + ex.getMessage());
+            Ui.error(stage, t("app.errorRestoring", ex.getMessage()));
             return;
         }
         repo = new ProfileRepository(db);
         section = Section.SUMMARY;
         loadActiveProfile();
-        Ui.info(stage, "S'han restaurat les dades de la còpia del " + Format.date(copy.date())
-                + ". Les dades d'abans s'han guardat a la carpeta de còpies per si de cas.");
+        Ui.info(stage, t("app.restored", Format.date(copy.date())));
     }
 
     @Override
@@ -392,7 +390,7 @@ public class PessicApp extends Application implements AppContext {
         picker.getItems().setAll(repo.list());
         picker.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(ProfileRepository.ProfileRef r) {
-                return r == null ? "" : r.name() + (r.empty() ? " (buit)" : "");
+                return r == null ? "" : r.name() + (r.empty() ? t("app.emptySuffix") : "");
             }
             @Override public ProfileRepository.ProfileRef fromString(String s) { return null; }
         });
@@ -404,9 +402,9 @@ public class PessicApp extends Application implements AppContext {
                 loadActiveProfile();
             }
         });
-        Button newProfile = new Button("Perfil nou…");
+        Button newProfile = new Button(t("app.newProfile"));
         newProfile.setOnAction(e -> showProfileForm(false));
-        HBox top = new HBox(8, brand, spacer(), Ui.label("Perfil", "muted"), picker, newProfile);
+        HBox top = new HBox(8, brand, spacer(), Ui.label(t("app.profile"), "muted"), picker, newProfile);
         top.setAlignment(Pos.CENTER_LEFT);
 
         Button prev = new Button("‹");
@@ -415,14 +413,12 @@ public class PessicApp extends Application implements AppContext {
         Button next = new Button("›");
         next.getStyleClass().add("nav-arrow");
         next.setOnAction(e -> goToCycle(cycle.plusMonths(1)));
-        Button now = Ui.link("Avui", () -> goToCycle(calc.cycleContaining(today()).key()));
+        Button now = Ui.link(t("app.today"), () -> goToCycle(calc.cycleContaining(today()).key()));
         Label title = Ui.label(Format.month(cycle), "h1");
         title.setMinWidth(230);
         title.setAlignment(Pos.CENTER);
         var c = summary.cycle();
-        Label range = Ui.label("Del " + c.start().getDayOfMonth() + " de " + Format.monthName(c.start().getMonthValue()).toLowerCase()
-                + " al " + c.end().getDayOfMonth() + " de " + Format.monthName(c.end().getMonthValue()).toLowerCase()
-                + " de " + c.end().getYear(), "muted");
+        Label range = Ui.label(t("app.cycleRange", c.start().getDayOfMonth(), Format.ofMonth(c.start().getMonthValue()), c.end().getDayOfMonth(), Format.ofMonth(c.end().getMonthValue()), c.end().getYear()), "muted");
         HBox cycleNav = new HBox(8, prev, title, next, now, spacer(), range);
         cycleNav.setAlignment(Pos.CENTER_LEFT);
 

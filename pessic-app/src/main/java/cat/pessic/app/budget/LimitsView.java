@@ -1,5 +1,6 @@
 package cat.pessic.app.budget;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.app.AppContext;
 import cat.pessic.app.common.Format;
 import cat.pessic.app.common.SimpleTable;
@@ -41,8 +42,8 @@ public final class LimitsView {
         Map<Category, Label> warnings = new EnumMap<>(Category.class);
         Map<Category, BigDecimal> fixedMonthly = new EnumMap<>(Category.class);
 
-        SimpleTable t = new SimpleTable(0, "Categoria", ">Límit mensual (€)", ">Previsió INE", ">Fixos al mes",
-                ">Anuals (reserva)", ">Gastat aquest mes");
+        SimpleTable t = new SimpleTable(0, t("common.category"), ">" + t("budget.limits.monthlyLimit"), ">" + t("budget.limits.ineForecast"), ">" + t("budget.limits.fixedPerMonth"),
+                ">" + t("budget.limits.annualsReserve"), ">" + t("budget.limits.spentThisMonth"));
         for (Category c : Category.ALL) {
             TextField f = Ui.amountField(cfg.limit(c));
             f.setPrefWidth(110);
@@ -92,26 +93,21 @@ public final class LimitsView {
                 BigDecimal fixed = fixedMonthly.get(en.getKey());
                 Label warn = warnings.get(en.getKey());
                 boolean short_ = fixed.compareTo(limit) > 0;
-                warn.setText(short_ ? "supera el límit" : "");
+                warn.setText(short_ ? t("budget.limits.overLimit") : "");
                 warn.setVisible(short_);
                 warn.setManaged(short_);
             }
             BigDecimal left = cfg.income().subtract(sum).subtract(reserve).subtract(goals);
-            total.setText("Total: " + Format.eur(sum));
-            savings.setText("Ingressos " + Format.eur(cfg.income()) + " − límits " + Format.eur(sum)
-                    + (reserve.signum() > 0 ? " − reserva d'anuals " + Format.eur(reserve) : "")
-                    + (goals.signum() > 0 ? " − guardioles " + Format.eur(goals) : "")
-                    + " = " + Format.eur(left)
-                    + (left.signum() < 0 ? ". Els límits superen els ingressos." : " d'estalvi previst"
-                    + (cfg.savings().signum() > 0 ? " (inclou els " + Format.eur(cfg.savings()) + " d'estalvi automàtic)." : ".")));
+            total.setText(t("budget.limits.total", Format.eur(sum)));
+            savings.setText(t("budget.limits.summary", Format.eur(cfg.income()), Format.eur(sum), (reserve.signum() > 0 ? t("budget.limits.summaryReserve", Format.eur(reserve)) : ""), (goals.signum() > 0 ? t("budget.limits.summaryGoals", Format.eur(goals)) : ""), Format.eur(left), (left.signum() < 0 ? t("budget.limits.summaryOverIncome") : t("budget.limits.summarySavings", (cfg.savings().signum() > 0 ? t("budget.limits.summaryAutomaticSavings", Format.eur(cfg.savings())) : ".")))));
             savings.getStyleClass().remove("text-bad");
             if (left.signum() < 0) savings.getStyleClass().add("text-bad");
-            Ui.showError(error, bad ? "Hi ha imports que no s'entenen (marcats en vermell)." : null);
+            Ui.showError(error, bad ? t("budget.limits.errorAmounts") : null);
         };
         fields.values().forEach(f -> f.textProperty().addListener((o, a, b) -> recompute.run()));
         recompute.run();
 
-        Button save = Ui.primary("Desa els límits");
+        Button save = Ui.primary(t("budget.limits.save"));
         save.setOnAction(e -> {
             Map<Category, BigDecimal> values = new EnumMap<>(Category.class);
             for (var en : fields.entrySet()) {
@@ -125,20 +121,17 @@ public final class LimitsView {
                 }
                 values.put(en.getKey(), v.get());
             }
-            if (ctx.update(p -> BudgetOps.setLimits(p, values))) Ui.info(ctx.window(), "Límits desats.");
+            if (ctx.update(p -> BudgetOps.setLimits(p, values))) Ui.info(ctx.window(), t("budget.limits.saved"));
         });
-        Button fromIne = new Button("Posa els límits segons l'INE");
+        Button fromIne = new Button(t("budget.limits.applyIne"));
         fromIne.setOnAction(e -> {
             IneLimits.Proposal proposal = BudgetOps.applyIneLimits(ctx.profile(), ine);
             proposal.limits().forEach((c, v) -> fields.get(c).setText(Format.input(v)));
-            String msg = "S'han omplert els límits amb la previsió de l'INE per a llars com la teva, descomptant el que ja "
-                    + "cobreix la reserva d'anuals.";
+            String msg = t("budget.limits.ineApplied");
             if (proposal.scaled()) {
-                msg += " La previsió (" + Format.eur(proposal.ineTotal()) + ") no cap en el que tens disponible cada mes ("
-                        + Format.eur(proposal.available()) + " = ingressos − estalvi automàtic − reserva − guardioles), així que s'han "
-                        + "ajustat tots al " + proposal.scalePercent() + " %.";
+                msg += t("budget.limits.ineScaled", Format.eur(proposal.ineTotal()), Format.eur(proposal.available()), proposal.scalePercent());
             }
-            Ui.showError(notice, msg + " Revisa'ls i prem «Desa els límits».");
+            Ui.showError(notice, t("budget.limits.ineReview", msg));
         });
         HBox buttons = new HBox(8, fromIne, save);
         buttons.setAlignment(Pos.CENTER_RIGHT);
@@ -147,30 +140,26 @@ public final class LimitsView {
         HBox footer = new HBox(12, total, spacer, buttons);
         footer.setAlignment(Pos.CENTER_LEFT);
 
-        return Ui.page(Ui.card(Ui.sectionHead("Límits per categoria"),
-                Ui.wrapped("Quant vols gastar cada mes en cada categoria, incloent-hi els pagaments fixos d'aquella categoria. "
-                        + "Els pagaments puntuals se sumen automàticament al límit els mesos que toquen, i els anuals surten de la "
-                        + "reserva.", "muted"),
+        return Ui.page(Ui.card(Ui.sectionHead(t("budget.limits.title")),
+                Ui.wrapped(t("budget.limits.hint"), "muted"),
                 Ui.wrapped(reference(ine, cfg), "small"),
                 t.node(), notice, footer, savings, error));
     }
 
     /** "tipus 486,57 · membres 461,85 · ingressos 404,86" */
     private static String ineParts(IneReference.Expectation e) {
-        StringBuilder sb = new StringBuilder("tipus " + Format.eur(e.byType()));
-        if (e.bySize() != null) sb.append(" · membres ").append(Format.eur(e.bySize()));
-        if (e.byIncome() != null) sb.append(" · ingressos ").append(Format.eur(e.byIncome()));
+        StringBuilder sb = new StringBuilder(t("budget.limits.byType", Format.eur(e.byType())));
+        if (e.bySize() != null) sb.append(t("budget.limits.membersSeparator")).append(Format.eur(e.bySize()));
+        if (e.byIncome() != null) sb.append(t("budget.limits.incomeSeparator")).append(Format.eur(e.byIncome()));
         return sb.toString();
     }
 
     private static String reference(IneReference ine, BudgetConfig cfg) {
-        String members = cfg.members() == null ? "membres no indicats (afegeix-los a «Configuració»)"
-                : cfg.members() >= Catalog.MAX_MEMBERS ? "5 o més membres"
-                : cfg.members() == 1 ? "1 membre" : cfg.members() + " membres";
-        String income = ine.incomeBand(cfg.income()).map(b -> "ingressos " + b.replace("Hasta", "fins a")
-                .replace("De ", "de ").replace(" euros o más", " euros o més")).orElse("ingressos no indicats");
-        return "Previsió INE: mitjana del que gasten al mes les llars semblants a la teva segons l'Encuesta de "
-                + "Presupuestos Familiares " + ine.year() + " (" + Catalog.HOUSEHOLDS.get(cfg.household()) + " · "
-                + members + " · " + income + ").";
+        String members = cfg.members() == null ? t("budget.limits.membersUnknown")
+                : cfg.members() >= Catalog.MAX_MEMBERS ? t("budget.limits.membersFiveOrMore")
+                : cfg.members() == 1 ? t("budget.limits.membersOne") : t("budget.limits.membersMany", cfg.members());
+        String income = ine.incomeBand(cfg.income()).map(b -> t("budget.limits.incomeBand", b.replace("Hasta", t("budget.limits.ineBand.upTo"))
+                .replace("De ", t("budget.limits.ineBand.from")).replace(" euros o más", t("budget.limits.ineBand.orMore")))).orElse(t("budget.limits.incomeUnknown"));
+        return t("budget.limits.ineReference", ine.year(), Catalog.HOUSEHOLDS.get(cfg.household()), members, income);
     }
 }

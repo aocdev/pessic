@@ -1,5 +1,6 @@
 package cat.pessic.core.account;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.budget.BudgetCalculator;
 import cat.pessic.core.budget.CycleSummary;
 import cat.pessic.core.budget.PayCycle;
@@ -166,7 +167,7 @@ public final class Cash {
         BigDecimal variableLeft = s.left().max(BigDecimal.ZERO);
         if (variableLeft.signum() > 0) {
             balance = balance.subtract(variableLeft);
-            lines.add(new Line(cycle.end(), "Resta del pressupost, si el gastes tot", variableLeft.negate(),
+            lines.add(new Line(cycle.end(), t("account.forecast.restOfBudget"), variableLeft.negate(),
                     Money.round(balance), null));
             if (balance.compareTo(lowest) < 0) {
                 lowest = balance;

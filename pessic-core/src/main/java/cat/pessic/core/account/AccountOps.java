@@ -1,5 +1,6 @@
 package cat.pessic.core.account;
 
+import static cat.pessic.core.common.I18n.t;
 import cat.pessic.core.common.Ids;
 import cat.pessic.core.profile.Ledger;
 import cat.pessic.core.profile.Profile;
@@ -44,7 +45,7 @@ public final class AccountOps {
         BigDecimal diff = actual.subtract(Cash.estimate(p, date));
         if (diff.signum() == 0) return p;
         List<AccountEntry> list = new ArrayList<>(p.ledger().accountEntries());
-        list.add(new AccountEntry(Ids.next("c"), date, diff, "Ajust amb el saldo del banc", cycle));
+        list.add(new AccountEntry(Ids.next("c"), date, diff, t("account.note.bankAdjustment"), cycle));
         return p.withLedger(p.ledger().withAccountEntries(list));
     }
 
@@ -66,7 +67,7 @@ public final class AccountOps {
             if (Pot.RESERVE_ID.equals(en.getKey()) && !q.ledger().reserve().openingSet()) {
                 q = SavingsOps.setReserveBalance(q, BigDecimal.ZERO, date);
             }
-            q = SavingsOps.addPotEntry(q, en.getKey(), date, v, PotEntry.Kind.CONTRIBUTION, "Diners que ja tenia al compte");
+            q = SavingsOps.addPotEntry(q, en.getKey(), date, v, PotEntry.Kind.CONTRIBUTION, t("account.note.alreadyInAccount"));
             total = total.add(v);
         }
         if (total.signum() == 0) return p;
