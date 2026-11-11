@@ -1,0 +1,77 @@
+# ------------------------------------------------------------------ build output
+target/
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+*.class
+*.jar
+*.war
+# installers, if they are ever built here
+*.deb
+*.rpm
+*.msi
+*.dmg
+*.exe
+
+# ------------------------------------------------------------------ personal data
+# Never commit real budgets. The only data file in the repo is the invented test
+# profile in pessic-db/src/test/resources (backup-sample.json).
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.db.bak-v*
+backups/
+pessic-before-restore-*
+# files the app exports (JSON copies and CSV spreadsheets)
+pessic-copia-*.json
+pessic-moviments-*.csv
+pessic-sobres-*.csv
+pessic-historic-*.csv
+*.csv
+*.xls
+*.xlsx
+*.ods
+
+# ------------------------------------------------------------------ crash logs
+hs_err_pid*.log
+replay_pid*.log
+*.log
+
+# ------------------------------------------------------------------ IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+bin/
+nbproject/
+nbbuild/
+nbdist/
+.nb-gradle/
+*.swp
+*.swo
+*~
+.#*
+
+# ------------------------------------------------------------------ OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.directory
+.Trash-*
+
+# ------------------------------------------------------------------ tools
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.env
+.env.*
