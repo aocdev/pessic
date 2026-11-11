@@ -76,6 +76,32 @@ propose starting limits from the INE averages for that household. People who alr
 backup (`.json`) can import it from the same screen instead. More profiles can be added later
 with **Perfil nou…**.
 
+## Installers
+
+`packaging/package.sh` builds installers with `jpackage` for the system it runs on, into `dist/`.
+Each one bundles a Java runtime with only the modules Pessic needs (including `jdk.localedata`, for
+Catalan month names), so users do not need Java.
+
+| System  | Command                        | Output                                | Needs                     |
+|---------|--------------------------------|---------------------------------------|---------------------------|
+| Linux   | `packaging/package.sh rpm deb` | `pessic-1.0.0-1.x86_64.rpm`, `pessic_1.0.0_amd64.deb` | `rpmbuild`; `dpkg-deb` and `fakeroot` |
+| Windows | `bash packaging/package.sh msi` (Git Bash) | `Pessic-1.0.0.msi`           | WiX Toolset 3             |
+| macOS   | `packaging/package.sh dmg`     | `Pessic-1.0.0.dmg`                    | Xcode command line tools  |
+| any     | `packaging/package.sh app-image` | `dist/Pessic/` (no installer, for testing) |                     |
+
+jpackage cannot build for another system, so `.github/workflows/installers.yml` builds all of them on
+GitHub Actions: push a tag such as `v1.0.0` and it runs the tests, builds the `.deb`, `.rpm`, `.msi`
+and two `.dmg` (`-arm64` for Apple silicon, `-x64` for Intel), and attaches them to a GitHub release.
+"Run workflow" in the Actions tab does the same without a release.
+
+- Linux packages install to `/opt/pessic` and add Pessic to the applications menu (Office).
+- The Windows installer installs for the current user (no administrator rights) and adds a Start menu
+  entry and a desktop shortcut. `WIN_UPGRADE_UUID` in the script must never change: it is how Windows
+  upgrades an installed Pessic instead of installing a second one.
+- The installers are not signed, so Windows SmartScreen and macOS Gatekeeper warn the first time
+  ("Run anyway"; on macOS, right-click > Open). Signing needs a paid certificate per system.
+- jpackage on macOS rejects versions that start with 0, which is why the first release is 1.0.0.
+
 ## Categories and INE reference
 
 - **Categories are the 13 COICOP 2018 groups** that INE uses in the Encuesta de Presupuestos Familiares
@@ -198,4 +224,3 @@ core and unit-tested) and are saved immediately.
 
 1. Optional: suggest updating limits yearly with INE's CPI by COICOP group (table 76125).
 2. ES/EN translations: copy `strings_ca.properties`, translate it, and add a language setting.
-3. Installers with `jpackage` (`.msi`, `.dmg`, `.deb`/`.rpm`) via a CI matrix.

@@ -6,7 +6,7 @@
 
   <groupId>cat.pessic</groupId>
   <artifactId>pessic-parent</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <name>Pessic (parent)</name>
   <description>Monthly envelope budget: desktop edition with an embedded database.</description>

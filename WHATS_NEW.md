@@ -1,6 +1,6 @@
 # Novetats de Pessic
 
-## Versió 0.1 — novembre de 2026
+## Versió 1.0 — novembre de 2026
 
 La primera versió de Pessic: una aplicació d'escriptori que funciona sense internet i que guarda les
 teves dades al teu ordinador, i enlloc més.

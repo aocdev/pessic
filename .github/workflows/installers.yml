@@ -1,0 +1,102 @@
+# Builds the Pessic installers on each system with jpackage (packaging/package.sh).
+# - Push a tag like v1.0.0: tests, installers for every system, and a GitHub release with them attached.
+# - Actions tab > Installers > Run workflow: the same, without a release (download them from the run).
+name: Installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Build and run all tests
+        run: mvn -B install
+
+  package:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            types: "deb rpm"
+          - os: windows-2022
+            types: "msi"
+          - os: macos-latest        # Apple silicon
+            types: "dmg"
+            suffix: "-arm64"
+          - os: macos-15-intel      # Intel
+            types: "dmg"
+            suffix: "-x64"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Linux packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm fakeroot
+
+      - name: WiX Toolset 3 (jpackage needs it for .msi)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command candle.exe -ErrorAction SilentlyContinue)) {
+            choco install wixtoolset --version 3.14.1 -y --no-progress
+          }
+          $wix = Get-ChildItem "C:\Program Files (x86)" -Filter "WiX Toolset v3*" -Directory | Select-Object -First 1
+          if ($wix) { "$($wix.FullName)\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8 }
+
+      - name: Build the installers
+        shell: bash
+        run: bash packaging/package.sh ${{ matrix.types }}
+
+      - name: Name the macOS installer by processor
+        if: runner.os == 'macOS'
+        shell: bash
+        run: for f in dist/*.dmg; do mv "$f" "${f%.dmg}${{ matrix.suffix }}.dmg"; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            dist/*.deb
+            dist/*.rpm
+            dist/*.msi
+            dist/*.dmg
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -la dist
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Pessic ${GITHUB_REF_NAME#v}" \
+            --generate-notes

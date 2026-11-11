@@ -8,23 +8,11 @@ User-facing release notes, in Catalan, are in [WHATS_NEW.md](WHATS_NEW.md).
 
 ## [Unreleased]
 
-### Changed
-- Every user-visible text moved out of the code into `i18n/strings_ca.properties` (about 615 keys), read
-  through `I18n.t(key, values…)` and `I18n.plural(key, n)`. Only Catalan for now; the screens show exactly
-  the same text as before. `I18nTest` keeps the code and the file in step.
-- Category names, descriptions and examples, income and leftover labels, household types and CSV headers
-  also come from the strings file.
+Nothing yet.
 
-- Texts the user sees no longer mention the old web app: the first-run screen offers to import "una
-  còpia de Pessic", and the manual and release notes no longer refer to it.
+## [1.0.0] - 2026-11-11
 
-### Fixed
-- The cycle dates in the header said "Del 28 de octubre"; now "Del 28 d'octubre".
-- "1 dies" left in the month on Resum; now "1 dia".
-
-## [0.1.0] - 2026-11-11
-
-First version of the desktop app: a port of the Pessic web app (PWA) to Java 21 and JavaFX, with an
+First release of the desktop app: a port of the Pessic web app (PWA) to Java 21 and JavaFX, with an
 embedded SQLite database. Built between 2026-11-09 and 2026-11-11, in the four steps below. Each one
 upgraded the database schema (`PRAGMA user_version`) and backed up the old file as
 `pessic.db.bak-v<n>` first.
@@ -87,11 +75,22 @@ upgraded the database schema (`PRAGMA user_version`) and backed up the old file 
 - JSON backup format v4 (v1–v3 still import).
 
 #### Project
+- Installers built with `jpackage` (`packaging/package.sh`): `.rpm` and `.deb` for Linux, `.msi` for
+  Windows, `.dmg` for macOS, each with its own Java runtime, so Java does not need to be installed.
+  `.github/workflows/installers.yml` builds all of them on GitHub Actions and attaches them to the
+  release of a `v*` tag.
 - `README.md` for developers, `MANUAL.md` (user manual, Catalan), `WHATS_NEW.md` and this changelog.
 - `.gitignore` that keeps databases, backups, exports, spreadsheets, logs and IDE files out of the
   repository.
 
 ### Changed
+- Every user-visible text moved out of the code into `i18n/strings_ca.properties` (about 615 keys), read
+  through `I18n.t(key, values…)` and `I18n.plural(key, n)`. Only Catalan for now; the screens show exactly
+  the same text as before. `I18nTest` keeps the code and the file in step.
+- Category names, descriptions and examples, income and leftover labels, household types and CSV headers
+  also come from the strings file.
+- Texts the user sees no longer mention the old web app: the first-run screen offers to import "una
+  còpia de Pessic", and the manual and release notes no longer refer to it.
 - Code organised by feature instead of one package per module: `budget`, `expense`, `payment`,
   `income`, `savings`, `account`, `monthclose`, `history`, `profile`, `ine`, `export` and `common`,
   with the same names in `pessic-core`, `pessic-db` and `pessic-app`. Tests sit next to the feature
@@ -104,6 +103,8 @@ upgraded the database schema (`PRAGMA user_version`) and backed up the old file 
 - Test data replaced with an invented profile; the golden file was regenerated from it.
 
 ### Fixed
+- The cycle dates in the header said "Del 28 de octubre"; now "Del 28 d'octubre".
+- "1 dies" left in the month on Resum; now "1 dia".
 - Dialogs opened squashed because their height was measured before styles were applied.
 - The month-close banner text was cut off on narrow windows.
 - Històric listed months before the first data, and showed the running month as "100 %".
@@ -120,4 +121,4 @@ upgraded the database schema (`PRAGMA user_version`) and backed up the old file 
 - Backups in format v4 cannot be opened by the web app.
 
 [Unreleased]: #unreleased
-[0.1.0]: #010---2026-11-11
+[1.0.0]: #100---2026-11-11
