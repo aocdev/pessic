@@ -8,6 +8,9 @@ Pessic is the Java desktop successor of the *Pressupost mensual* web app (`../pr
 It keeps data in an embedded SQLite database instead of the browser's `localStorage`, and compares
 your budget with what similar households spend according to INE (Spain's statistics office).
 
+**For users:** [MANUAL.md](MANUAL.md) (how to use Pessic, in Catalan) and [WHATS_NEW.md](WHATS_NEW.md)
+(what's new). **For developers:** this file and [CHANGELOG.md](CHANGELOG.md).
+
 ## Modules
 
 | Module            | Contents                                                                    |

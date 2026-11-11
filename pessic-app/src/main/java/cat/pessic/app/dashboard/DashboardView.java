@@ -252,7 +252,7 @@ public final class DashboardView {
     }
 
     /**
-     * "Anual: Suscripción Claude, 217,80 € al desembre · 18,15 €/mes a la reserva", plus whether it is
+     * "Anual: Assegurança de la casa, 360,00 € al març · 30,00 €/mes a la reserva", plus whether it is
      * due this month. Null when the category has no annual payments.
      */
     private static String annualNote(List<AnnualItem> annuals, CycleSummary.Envelope e) {
