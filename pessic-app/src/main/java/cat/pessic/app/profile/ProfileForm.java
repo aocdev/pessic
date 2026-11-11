@@ -82,7 +82,7 @@ public final class ProfileForm {
 
         page.getChildren().add(card(firstRun, onCreate, onCancel));
 
-        Hyperlink importLink = new Hyperlink(t("profile.form.importWebApp"));
+        Hyperlink importLink = new Hyperlink(t("profile.form.importBackup"));
         importLink.setOnAction(e -> onImport.run());
         page.getChildren().add(importLink);
 

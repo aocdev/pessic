@@ -15,6 +15,9 @@ User-facing release notes, in Catalan, are in [WHATS_NEW.md](WHATS_NEW.md).
 - Category names, descriptions and examples, income and leftover labels, household types and CSV headers
   also come from the strings file.
 
+- Texts the user sees no longer mention the old web app: the first-run screen offers to import "una
+  còpia de Pessic", and the manual and release notes no longer refer to it.
+
 ### Fixed
 - The cycle dates in the header said "Del 28 de octubre"; now "Del 28 d'octubre".
 - "1 dies" left in the month on Resum; now "1 dia".

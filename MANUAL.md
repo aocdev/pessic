@@ -69,9 +69,6 @@ El primer cop que obres Pessic surt **Crea el teu perfil**:
    Pessic ompli els límits per tu. Després els pots canviar.
 8. Prem **Crea el perfil**.
 
-> Ja feies servir l'aplicació web? Prem **Ja tens una còpia de l'aplicació web? Importa-la (.json)**
-> i tria la còpia que en vas exportar.
-
 Pots tenir més d'un perfil (per exemple, el teu i el de la llar): **Perfil nou…** a dalt a la dreta.
 
 ---

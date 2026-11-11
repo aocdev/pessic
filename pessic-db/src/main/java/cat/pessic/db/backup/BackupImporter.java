@@ -49,7 +49,7 @@ public final class BackupImporter {
     public Backup read(InputStream in) throws IOException {
         JsonNode root = mapper.readTree(in);
         if (root == null || !root.path("profiles").isObject()) {
-            throw new IOException("Not a backup of the Pressupost web app: missing \"profiles\"");
+            throw new IOException("Not a Pessic backup: missing \"profiles\"");
         }
         List<Profile> profiles = new ArrayList<>();
         Iterator<Map.Entry<String, JsonNode>> it = root.get("profiles").fields();

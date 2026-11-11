@@ -72,8 +72,8 @@ lists them and can restore one; the data being replaced is saved first as `pessi
 
 On first start, Pessic asks for a name, net monthly income, payday, household type and whether the
 salary comes in 12 or 14 payments, and can
-propose starting limits from the INE averages for that household. People who already use the web
-app can import its backup (`.json`) from the same screen instead. More profiles can be added later
+propose starting limits from the INE averages for that household. People who already have a Pessic
+backup (`.json`) can import it from the same screen instead. More profiles can be added later
 with **Perfil nou…**.
 
 ## Categories and INE reference

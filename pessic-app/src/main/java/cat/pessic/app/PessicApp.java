@@ -227,8 +227,8 @@ public class PessicApp extends Application implements AppContext {
     @Override
     public void importBackup() {
         FileChooser fc = new FileChooser();
-        fc.setTitle(t("app.importWebAppBackup"));
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(t("app.webAppBackupFilter"), "*.json"));
+        fc.setTitle(t("app.importBackupTitle"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(t("app.backupFilter"), "*.json"));
         File f = fc.showOpenDialog(stage);
         if (f == null) return;
         try (InputStream in = Files.newInputStream(f.toPath())) {

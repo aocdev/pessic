@@ -2,8 +2,8 @@
 
 ## Versió 0.1 — novembre de 2026
 
-Pessic ja és una aplicació d'escriptori: funciona sense navegador i sense internet, i les teves dades
-es queden al teu ordinador. Si venies de l'aplicació web, importa'n la còpia i ho tindràs tot.
+La primera versió de Pessic: una aplicació d'escriptori que funciona sense internet i que guarda les
+teves dades al teu ordinador, i enlloc més.
 
 Per aprendre a fer-la servir, llegeix el [manual d'ús](MANUAL.md).
 
