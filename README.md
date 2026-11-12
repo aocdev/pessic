@@ -98,6 +98,8 @@ and two `.dmg` (`-arm64` for Apple silicon, `-x64` for Intel), and attaches them
 - The Windows installer installs for the current user (no administrator rights) and adds a Start menu
   entry and a desktop shortcut. `WIN_UPGRADE_UUID` in the script must never change: it is how Windows
   upgrades an installed Pessic instead of installing a second one.
+- Each release includes `SHA256SUMS.txt`. To check a download: `sha256sum -c SHA256SUMS.txt
+  --ignore-missing` (Linux), `shasum -a 256 <file>` (macOS), `Get-FileHash <file>` (Windows).
 - The installers are not signed, so Windows SmartScreen and macOS Gatekeeper warn the first time
   ("Run anyway"; on macOS, right-click > Open). Signing needs a paid certificate per system.
 - jpackage on macOS rejects versions that start with 0, which is why the first release is 1.0.0.
