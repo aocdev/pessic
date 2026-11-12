@@ -90,6 +90,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: package
     runs-on: ubuntu-latest
+    env:
+      # a token that can trigger workflows in aocdev/pessic-website (see README, "Installers")
+      HAS_WEBSITE_TOKEN: ${{ secrets.WEBSITE_DISPATCH_TOKEN != '' }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -115,3 +118,13 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --title "Pessic ${GITHUB_REF_NAME#v}" \
             --generate-notes
+
+      - name: Update the website's downloads
+        # the website's Pages workflow links the new installers and checksums, then redeploys
+        if: env.HAS_WEBSITE_TOKEN == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
+        run: |
+          gh api repos/aocdev/pessic-website/dispatches \
+            -f event_type=pessic-release \
+            -f "client_payload[version]=${GITHUB_REF_NAME#v}"

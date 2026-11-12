@@ -95,6 +95,10 @@ GitHub Actions: push a tag such as `v1.0.0` and it runs the tests, builds the `.
 and two `.dmg` (`-arm64` for Apple silicon, `-x64` for Intel), and attaches them to a GitHub release.
 "Run workflow" in the Actions tab does the same without a release.
 
+- After the release, the workflow asks the website (`aocdev/pessic-website`) to link the new
+  installers and their checksums and redeploy. It needs a repository secret `WEBSITE_DISPATCH_TOKEN`
+  (a fine-grained token with Contents: Read and write on `pessic-website`); without it, that step
+  is skipped.
 - Linux packages install to `/opt/pessic` and add Pessic to the applications menu (Office).
 - The Windows installer installs for the current user (no administrator rights) and adds a Start menu
   entry and a desktop shortcut. `WIN_UPGRADE_UUID` in the script must never change: it is how Windows
