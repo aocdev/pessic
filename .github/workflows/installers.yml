@@ -26,7 +26,7 @@ jobs:
           java-version: "21"
           cache: maven
       - name: Build and run all tests
-        run: mvn -B install
+        run: ./mvnw -B install
 
   package:
     needs: test

@@ -10,6 +10,29 @@
   <packaging>pom</packaging>
   <name>Pessic (parent)</name>
   <description>Monthly envelope budget: desktop edition with an embedded database.</description>
+  <url>https://github.com/aocdev/pessic</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>aortellsc</id>
+      <name>Albert Ortells</name>
+      <organization>aocdev</organization>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/aocdev/pessic.git</connection>
+    <developerConnection>scm:git:ssh://github.com:aocdev/pessic.git</developerConnection>
+    <url>https://github.com/aocdev/pessic/tree/main</url>
+  </scm>
 
   <modules>
     <module>pessic-core</module>

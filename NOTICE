@@ -1,0 +1,33 @@
+Pessic
+Copyright 2026 aocdev (Albert Ortells)
+
+This product was originally created by Albert Ortells (aocdev).
+
+This product includes software developed by third parties. The installers
+(.msi, .dmg, .deb, .rpm) also redistribute them:
+
+- OpenJFX (JavaFX) (https://openjfx.io/)
+  Licensed under the GNU General Public License v2 with the Classpath Exception.
+  Copyright (c) Oracle and/or its affiliates.
+
+- OpenJDK Java runtime, Eclipse Temurin build (https://adoptium.net/)
+  A reduced runtime made with jlink is bundled in the installers.
+  Licensed under the GNU General Public License v2 with the Classpath Exception.
+  Copyright (c) Oracle and/or its affiliates, and other contributors.
+
+- SQLite JDBC Driver (https://github.com/xerial/sqlite-jdbc)
+  Licensed under the Apache License 2.0.
+  Copyright (c) Taro L. Saito and contributors.
+  It includes SQLite (https://www.sqlite.org/), which is in the public domain.
+
+- Jackson (https://github.com/FasterXML/jackson)
+  jackson-core, jackson-databind and jackson-annotations.
+  Licensed under the Apache License 2.0.
+  Copyright (c) FasterXML, LLC.
+
+This product includes data from:
+
+- Encuesta de Presupuestos Familiares (EPF), Instituto Nacional de Estadística
+  (INE), Spain (https://www.ine.es/). Average spending per household by COICOP
+  2018 group, in pessic-core/src/main/resources/ine/epf.tsv.
+  Source: INE. Reused under the INE's terms, which allow reuse citing the source.

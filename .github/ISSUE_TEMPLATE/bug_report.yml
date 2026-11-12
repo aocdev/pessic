@@ -1,0 +1,81 @@
+name: Bug Report
+description: Report a bug in Pessic
+labels: [ "bug" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please fill out the information below to help us investigate.
+
+        **Do not attach your real budget, database or backup**: they contain your personal finances.
+        If the bug only happens with your data, try to reproduce it with an invented profile.
+
+  - type: input
+    id: version
+    attributes:
+      label: Pessic version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: System and installer
+      options:
+        - Windows (.msi)
+        - macOS, Apple silicon (.dmg)
+        - macOS, Intel (.dmg)
+        - Linux (.deb)
+        - Linux (.rpm)
+        - Built from source
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: |
+        The screen, what you did, and the dates involved (your payday and the day you saw the bug):
+        many calculations depend on them.
+      placeholder: |
+        1. Payday on the 28th, today 2026-11-12
+        2. Go to «Pagaments fixos»
+        3. Press «Pagat» on …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should Pessic show or do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Screenshots are welcome (with invented data).
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error message
+      description: The exact text of any error dialog, or output from the terminal.
+      render: text
+    validations:
+      required: false

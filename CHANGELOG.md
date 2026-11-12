@@ -75,6 +75,9 @@ upgraded the database schema (`PRAGMA user_version`) and backed up the old file 
 - JSON backup format v4 (v1–v3 still import).
 
 #### Project
+- Open source under the Apache License 2.0 (`LICENSE`, `NOTICE`), with `CONTRIBUTING.md`,
+  `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue and pull request templates, a CI workflow, and the Maven
+  Wrapper (`./mvnw`).
 - Installers built with `jpackage` (`packaging/package.sh`): `.rpm` and `.deb` for Linux, `.msi` for
   Windows, `.dmg` for macOS, each with its own Java runtime, so Java does not need to be installed.
   `.github/workflows/installers.yml` builds all of them on GitHub Actions and attaches them to the

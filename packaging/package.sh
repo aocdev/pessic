@@ -31,6 +31,8 @@ JLINK_OPTIONS="--strip-debug --no-man-pages --no-header-files --strip-native-com
 VERSION="$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | head -1)"
 APP_VERSION="${VERSION%-SNAPSHOT}"
 YEAR="$(date +%Y)"
+# the project's Maven Wrapper (same Maven everywhere), or Maven if the wrapper is missing
+MVN="mvn"; [ -x "$ROOT/mvnw" ] && MVN="$ROOT/mvnw"
 
 case "$(uname -s)" in
   Linux*)   OS=linux ;;
@@ -54,12 +56,12 @@ fi
 
 # ------------------------------------------------------------------ build and stage the jars
 if [ "${SKIP_BUILD:-}" != "1" ]; then
-  mvn -B -q -DskipTests install
+  "$MVN" -B -q -DskipTests install
 fi
 
 STAGE="$ROOT/pessic-app/target/jpackage"
 rm -rf "$STAGE" && mkdir -p "$STAGE/input" "$STAGE/javafx" "$STAGE/deps"
-mvn -B -q -f pessic-app/pom.xml dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory="$STAGE/deps"
+"$MVN" -B -q -f pessic-app/pom.xml dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory="$STAGE/deps"
 for jar in "$STAGE"/deps/*.jar; do
   base="$(basename "$jar")"
   if [[ "$base" =~ ^javafx-[a-z]+-[0-9.]+\.jar$ ]]; then
@@ -71,6 +73,7 @@ for jar in "$STAGE"/deps/*.jar; do
   fi
 done
 cp "pessic-app/target/pessic-app-$VERSION.jar" "$STAGE/input/"
+cp "$ROOT/LICENSE" "$ROOT/NOTICE" "$STAGE/input/"   # Apache 2.0: the NOTICE goes with every copy
 
 case "$OS" in
   linux) ICON="$ROOT/packaging/icons/pessic.png" ;;
@@ -98,17 +101,19 @@ mkdir -p "$ROOT/dist"
 for type in "${TYPES[@]}"; do
   echo "==> $NAME $APP_VERSION: $type"
   EXTRA=()
+  [ "$type" != app-image ] && EXTRA=(--license-file "$ROOT/LICENSE")  # shown by the Windows and macOS installers
   case "$type" in
     rpm|deb)
-      EXTRA=(--linux-package-name "$PACKAGE" --linux-shortcut --linux-menu-group "Office;Finance;")
+      EXTRA+=(--linux-package-name "$PACKAGE" --linux-shortcut --linux-menu-group "Office;Finance;"
+             --linux-rpm-license-type "Apache-2.0")
       if [ "$type" = deb ] && [ -n "${PESSIC_DEB_MAINTAINER:-}" ]; then
         EXTRA+=(--linux-deb-maintainer "$PESSIC_DEB_MAINTAINER")
       fi ;;
     msi)
-      EXTRA=(--win-menu --win-menu-group "$NAME" --win-shortcut --win-dir-chooser --win-per-user-install
+      EXTRA+=(--win-menu --win-menu-group "$NAME" --win-shortcut --win-dir-chooser --win-per-user-install
              --win-upgrade-uuid "$WIN_UPGRADE_UUID") ;;
     dmg|pkg)
-      EXTRA=(--mac-package-identifier "cat.pessic.app" --mac-package-name "$NAME") ;;
+      EXTRA+=(--mac-package-identifier "cat.pessic.app" --mac-package-name "$NAME") ;;
     app-image) ;;
     *) echo "Unknown type: $type" >&2; exit 1 ;;
   esac

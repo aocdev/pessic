@@ -51,13 +51,14 @@ Tests sit in the same package as the code they test.
 
 ## Build and run
 
-Requires JDK 21 and Maven 3.9.
+Requires JDK 21. Maven is not needed: the Maven Wrapper (`./mvnw`, or `mvnw.cmd` on Windows)
+downloads Maven 3.9.9 the first time.
 
 ```bash
-mvn install                                   # build + all tests
-mvn -pl pessic-app javafx:run             # start the app
-PESSIC_DB=/tmp/test.db mvn -pl pessic-app javafx:run   # use a different database
-PESSIC_DB=/tmp/test.db PESSIC_TODAY=2026-12-01 mvn -pl pessic-app javafx:run   # pretend it is another day
+./mvnw install                                # build + all tests
+./mvnw -pl pessic-app javafx:run              # start the app
+PESSIC_DB=/tmp/test.db ./mvnw -pl pessic-app javafx:run   # use a different database
+PESSIC_DB=/tmp/test.db PESSIC_TODAY=2026-12-01 ./mvnw -pl pessic-app javafx:run   # pretend it is another day
 ```
 
 The database lives at:
@@ -230,3 +231,16 @@ core and unit-tested) and are saved immediately.
 
 1. Optional: suggest updating limits yearly with INE's CPI by COICOP group (table 76125).
 2. ES/EN translations: copy `strings_ca.properties`, translate it, and add a language setting.
+
+## Contributing
+
+Contributions are welcome: bug reports, features, translations and documentation. Read
+[CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, commit conventions and architecture,
+and the [Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately as described in
+[SECURITY.md](SECURITY.md).
+
+## License
+
+Pessic is open source under the [Apache License 2.0](LICENSE). Copyright 2026 aocdev (Albert Ortells).
+See [NOTICE](NOTICE) for the third-party software it includes (OpenJFX, SQLite JDBC, Jackson, and the
+Java runtime bundled in the installers) and the INE data it uses.

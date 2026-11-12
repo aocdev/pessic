@@ -1,0 +1,42 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: [ "enhancement" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your suggestion! Pessic is for planning and following a monthly budget, not for
+        analysing bank accounts: please describe how the feature helps with that.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What problem does this feature solve in your monthly budget? Why is it needed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Which screen would it be on, and how would you use it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: Numbers, a sketch or a mock-up of what Pessic should show (invented data).
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: How do you handle it today, or other approaches you've considered.
+    validations:
+      required: false
