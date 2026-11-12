@@ -1,6 +1,8 @@
 # Builds the Pessic installers on each system with jpackage (packaging/package.sh).
 # - Push a tag like v1.0.0: tests, installers for every system, and a GitHub release with them attached.
 # - Actions tab > Installers > Run workflow: the same, without a release (download them from the run).
+# Releases include SHA256SUMS.txt and, in public repositories, a signed build attestation for each file
+# (check with: gh attestation verify <file> --repo <owner>/<repo>).
 name: Installers
 
 on:
@@ -9,7 +11,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write     # create the release
+  id-token: write     # sign the build attestations (Sigstore, through GitHub)
+  attestations: write # store them
 
 jobs:
   test:
@@ -96,6 +100,12 @@ jobs:
         run: |
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
+      - name: Build attestations
+        # free for public repositories; private ones need GitHub Enterprise Cloud
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/*
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
